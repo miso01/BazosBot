@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+
+    <title>Bazoš Bot</title>
+
+{% endblock %}
+
+
+{% block body %}
+
+
+    <div class="container">
+
+    <form method="POST" action="{{ url_for("register") }}" class="text-center">
+
+        <h1 class="app_title">BAZOŠ BOT</h1>
+        <br>
+        <img src="{{ url_for('static', filename='images/bazos_logo.gif') }}" alt="Bazoš logo" style="width: 180px; height: auto;">
+
+        <br>
+        {{ form.csrf_token}}
+        <br>
+        {{ form.email(class='form-control', placeholder='Email')}}
+        <br>
+        {{ form.password(class='form-control', placeholder='Heslo')}}
+        <br>
+
+        <button class="btn btn-lg btn-primary btn-block" style="background-color: #f94f08; border-color: #f94f08;" type="submit">Registrovať sa</button>
+        <br>
+
+        <h3>Ešte nemáš konto? </h3> <a href="{{ url_for('register') }}">Registrovať sa</a>
+    </form>
+
+
+
+
+    </div>
+
+
+
+{% endblock %}

@@ -12,25 +12,89 @@
 
 
     <div class="container">
-    <form method="POST" action="{{ url_for("register") }}" class="text-center">
-        <h1 class="app_title">BAZOŠ BOT</h1>
-        <br>
-        <img src="{{ url_for('static', filename='images/bazos_logo.gif') }}" alt="Bazoš logo" style="width: 180px; height: auto;">
-        <br>
-        {{ form.csrf_token}}
-        <br>
-        {{ form.username(class='form-control', placeholder='Použivateľské meno')}}
-        <br>
-        {{ form.email(class='form-control' , placeholder='Email')}}
-        <br>
-        {{ form.password(class='form-control' , placeholder='Heslo')}}
-        <br>
-        {{ form.confirm_password(class='form-control',   placeholder='Potvrď heslo')}}
-        <br>
-        <button class="btn btn-lg btn-primary btn-block" style="background-color: #f94f08; border-color: #f94f08;" type="submit">Registrovať sa</button>
-        <br>
-        <h3>Už máš konto? </h3> <a href="{{ url_for('login') }}">Prihlásiť sa</a>
-    </form>
+        <form method="POST" action="{{ url_for("auth.register") }}" class="text-center">
+            <h1 class="app_title">BAZOŠ BOT</h1>
+            <br>
+            <img src="{{ url_for('static', filename='images/bazos_logo.gif') }}" alt="Bazoš logo"
+                 style="width: 180px; height: auto;">
+            <br>
+            {{ form.csrf_token }}
+            <br>
+            {{ form.username(class='form-control', placeholder='Použivateľské meno') }}
+            {% with errors = get_flashed_messages(category_filter=["username"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+            {{ form.email(class='form-control' , placeholder='Email') }}
+            {% with errors = get_flashed_messages(category_filter=["email"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+            {{ form.password(class='form-control' , placeholder='Heslo') }}
+         {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+            {{ form.confirm_password(class='form-control',   placeholder='Potvrď heslo') }}
+         {% with errors = get_flashed_messages(category_filter=["confirm_password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+
+            <button class="btn btn-lg btn-primary btn-block" style="background-color: #f94f08; border-color: #f94f08;"
+                    type="submit">Registrovať sa
+            </button>
+
+            {% with errors = get_flashed_messages(category_filter=["auth"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                                <li class="validation_error">{{ msg }}</li>
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+            <h3>Už máš konto? </h3> <a href="{{ url_for('auth.login') }}">Prihlásiť sa</a>
+
+        </form>
     </div>
 
 {% endblock %}

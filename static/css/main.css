@@ -1,5 +1,5 @@
 .app_title{
-    font-size: 300px;
+    font-size: 80px;
     color: #f94f08;
 }
 
@@ -7,3 +7,11 @@
     width: 100px;
     height: auto;
 }
+
+
+.validation_error{
+    color: red;
+    text-align: left;
+    list-style: none;
+}
+

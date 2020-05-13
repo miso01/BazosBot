@@ -3,7 +3,6 @@ from models import User, db
 from datetime import datetime
 from __init__ import login_manager
 from utils import flash_forms_errors
-
 from auth.forms import RegisterForm, LoginForm
 
 auth = Blueprint('auth', __name__)

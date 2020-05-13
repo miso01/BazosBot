@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+
+{% block head %}
+
+    <title>Bazoš Bot</title>
+
+{% endblock %}
+
+
+{% block body %}
+
+
+
+    <div class="float-left col-4">
+
+    <h3>Pridať inzerát</h3>
+
+
+
+        <form method="POST" action="{{ url_for("auth.login") }}" class="text-center">
+
+            <br>
+
+            {{ form.csrf_token }}
+            <br>
+            {{ form.section(class='form-control', placeholder='Rubrika') }}
+            {% with errors = get_flashed_messages(category_filter=["email"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+            {{ form.category(class='form-control', placeholder='Kategória') }}
+            {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+
+
+            {{ form.title(class='form-control', placeholder='Názov') }}
+            {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+            {{ form.text(class='form-control', placeholder='Text') }}
+            {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            {{ form.price(class='form-control', placeholder='Kategória') }}
+            {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            {{ form.zip_code(class='form-control', placeholder='Kategória') }}
+            {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+
+            {{ form.phone(class='form-control', placeholder='Kategória') }}
+            {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+            {{ form.ad_password(class='form-control', placeholder='Kategória') }}
+            {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+        </form>
+    </div>
+
+
+
+{% endblock %}

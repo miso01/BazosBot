@@ -10,11 +10,45 @@
 
 {% block body %}
 
+    {% for ad in ads %}
+        <br>
+        <div class="container">
+            <div class="cd-example">
+                <div class="card mb-3">
+                    <div class="row no-gutters">
+                        <div class="col-md-4">
+                            <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg"
+                                 aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img"><title>
+                                Placeholder</title>
+                                <rect width="100%" height="100%" fill="#868e96"></rect>
+                                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text>
+                            </svg>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ ad.title }}</h5>
+                            <p class="card-text"><small class="text-muted">{{ ad.section }}</small> <small class="text-muted">{{ ad.category }}</small></p>
+                                <p class="card-text">{{ ad.text }}</p>
+                                {% if ad.date_created != None %}
+                                    <p class="card-text"><small class="text-muted">{{ ad.date_created }}</small></p>
+                                {% endif %}
+                                <div class="float-right">
+                                    <button type="button" class="btn btn-sm btn-secondary">Upraviť</button>
+                                    <button type="button" class="btn btn-sm btn-danger">Odstrániť</button>
+                                </div>
+                                <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="container">
+
+    {% endfor %}
 
 
-    </div>
+
 
 
 

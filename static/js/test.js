@@ -1,0 +1,3 @@
+object.onchange = function () {
+    myScript
+};

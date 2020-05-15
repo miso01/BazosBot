@@ -1,30 +1,51 @@
 {% extends 'base.html' %}
 
-
 {% block head %}
 
     <title>Bazoš Bot</title>
 
 {% endblock %}
 
-
 {% block body %}
 
+    <script>
+        function val() {
 
+            var selector = document.getElementById("section_select")
+            $.ajax({
+                type: 'POST',
+                url: {{ url_for('ads.fetch_bazos_categories')}},
+                data: {'section': selector.value},
+                dataType: 'json',
+                success: function (response) {
+                    $('#categories_select')
+                        .find('option')
+                        .remove()
+                        .end()
+                    console.log(response);
+                    var i;
+                    console.log("response length je " + response.length)
+                    for (i = 0; i < response.length; i++) {
+                        $('#categories_select')
+                            .append($("<option></option>")
+                                .attr("value", response[i][0])
+                                .text(response[i][1]));
+                    }
+                },
+            });
+        }
+    </script>
 
     <div class="float-left col-4">
 
-    <h3>Pridať inzerát</h3>
+        <h3>Pridať inzerát</h3>
 
-
-
-        <form method="POST" action="{{ url_for("auth.login") }}" class="text-center">
+        <form method="POST" action="{{ url_for("ads.add_advertisement") }}" class="text-center">
 
             <br>
-
             {{ form.csrf_token }}
             <br>
-            {{ form.section(class='form-control', placeholder='Rubrika') }}
+            {{ form.section(class='form-control', placeholder='Rubrika',onchange="val()" ,id="section_select") }}
             {% with errors = get_flashed_messages(category_filter=["email"]) %}
                 {% if errors %}
                     <ul>
@@ -38,7 +59,7 @@
                 {% endif %}
             {% endwith %}
             <br>
-            {{ form.category(class='form-control', placeholder='Kategória') }}
+            {{ form.category(class='form-control', placeholder='Kategória', id="categories_select") }}
             {% with errors = get_flashed_messages(category_filter=["password"]) %}
                 {% if errors %}
                     <ul>
@@ -53,8 +74,8 @@
             {% endwith %}
 
 
-
-            {{ form.title(class='form-control', placeholder='Názov') }}
+            <br>
+            {{ form.title(class='form-control', placeholder='Nádpis') }}
             {% with errors = get_flashed_messages(category_filter=["password"]) %}
                 {% if errors %}
                     <ul>
@@ -68,7 +89,8 @@
                 {% endif %}
             {% endwith %}
             <br>
-            {{ form.text(class='form-control', placeholder='Text') }}
+        <div class="form-group">
+            {{ form.text(class='form-control', placeholder='Text', id="exampleFormControlTextarea1",rows="3") }}
             {% with errors = get_flashed_messages(category_filter=["password"]) %}
                 {% if errors %}
                     <ul>
@@ -81,7 +103,11 @@
                     </ul>
                 {% endif %}
             {% endwith %}
-            {{ form.price(class='form-control', placeholder='Kategória') }}
+        </div>
+            <br>
+
+
+            {{ form.price(class='form-control', placeholder='Cena v €') }}
             {% with errors = get_flashed_messages(category_filter=["password"]) %}
                 {% if errors %}
                     <ul>
@@ -94,8 +120,22 @@
                     </ul>
                 {% endif %}
             {% endwith %}
+            <br>
+            {{ form.price_select(class='form-control', placeholder='Rubrika') }}
+            {% with errors = get_flashed_messages(category_filter=["email"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
 
-            {{ form.zip_code(class='form-control', placeholder='Kategória') }}
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+            {{ form.zip_code(class='form-control', placeholder='PSČ') }}
             {% with errors = get_flashed_messages(category_filter=["password"]) %}
                 {% if errors %}
                     <ul>
@@ -108,9 +148,8 @@
                     </ul>
                 {% endif %}
             {% endwith %}
-
-
-            {{ form.phone(class='form-control', placeholder='Kategória') }}
+            <br>
+        {{ form.image( placeholder='Pridaj fotky') }}
             {% with errors = get_flashed_messages(category_filter=["password"]) %}
                 {% if errors %}
                     <ul>
@@ -123,8 +162,9 @@
                     </ul>
                 {% endif %}
             {% endwith %}
-
-            {{ form.ad_password(class='form-control', placeholder='Kategória') }}
+            <br>
+            <br>
+            {{ form.phone(class='form-control', placeholder='Mobilné číslo') }}
             {% with errors = get_flashed_messages(category_filter=["password"]) %}
                 {% if errors %}
                     <ul>
@@ -137,6 +177,25 @@
                     </ul>
                 {% endif %}
             {% endwith %}
+            <br>
+            {{ form.ad_password(class='form-control', placeholder='Heslo inzerátu') }}
+            {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                {% if errors %}
+                    <ul>
+                        {%- for msg in errors %}
+                            {% for m  in msg %}
+                                <li class="validation_error">{{ m }}</li>
+                            {% endfor %}
+
+                        {% endfor -%}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+            <br>
+        <button class="btn btn-lg btn-primary btn-block" style="background-color: #f94f08; border-color: #f94f08;"
+                    type="submit">Pridať inzerát
+            </button>
+            <br>
 
         </form>
     </div>

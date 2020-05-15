@@ -45,7 +45,6 @@
                             {% for m  in msg %}
                                 <li class="validation_error">{{ m }}</li>
                             {% endfor %}
-
                         {% endfor -%}
                     </ul>
                 {% endif %}
@@ -59,7 +58,7 @@
                 {% if errors %}
                     <ul>
                         {%- for msg in errors %}
-                               <li class="validation_error">{{ msg }}</li>
+                            <li class="validation_error">{{ msg }}</li>
                         {% endfor -%}
                     </ul>
                 {% endif %}

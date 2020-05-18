@@ -1,17 +1,28 @@
-.app_title{
+.app_title {
     font-size: 80px;
     color: #f94f08;
 }
 
-.app_logo{
+.app_logo {
     width: 100px;
     height: auto;
 }
 
 
-.validation_error{
+.validation_error {
     color: red;
     text-align: left;
     list-style: none;
 }
+
+
+.text-elipssis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+}
+
+
 

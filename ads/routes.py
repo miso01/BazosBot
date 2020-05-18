@@ -24,9 +24,6 @@ def add_advertisement():
         # filename = secure_filename(form.image.data.filename)
         # form.file.data.save('uploads/' + filename)
 
-        print("args je " + str(request.args))
-        print("values je " + str(request.form.values()))
-
         print("choices " + str(form.section.choices))
         print("choices " + str(form.category.choices))
         print("text " + str(dict(form.section.choices).get(form.section.data)) + " value   " + form.section.data)
@@ -34,9 +31,9 @@ def add_advertisement():
 
         ad = Advertisement(
             section_value=form.section.data,
-            section_text="ddd",
+            section_text="Section Text",
             category_value=form.category.data,
-            category_text="ddd",
+            category_text="Category Text",
             title=form.title.data,
             text=form.text.data,
             price=form.price.data,  # TODO validate
@@ -52,11 +49,27 @@ def add_advertisement():
         return render_template('add_ad.html', form=form)
 
 
-@ads.route('/ads/edit')
-def edit_advertisement():
+@ads.route('/ads/edit/<int:ad_id>', methods=["POST", "GET"])
+def edit_advertisement(ad_id):
+    ad = Advertisement.query.get_or_404(ad_id)
     form = AdForm()
     if request.method == "POST":
-        pass
+        ad.section_value = form.section.data
+        ad.section_text = "Section Text"
+        ad.category_value = form.category.data
+        ad.category_text = "Category Text"
+        ad.title = form.title.data
+        ad.text = form.text.data
+        ad.price = form.price.data  # TODO validate
+        ad.zip_code = form.zip_code.data
+        ad.phone = form.phone.data
+        ad.ad_password = form.ad_password.data
+        ad.date_refreshed = datetime.utcnow()
+        db.session.commit()
+        return redirect(url_for('ads.advertisements'))
+    else:
+        return render_template('edit_add.html', ad=ad, form=AdForm())
+    pass
 
 
 @ads.route('/fetch_bazos_categories/', methods=["POST"])
@@ -66,3 +79,11 @@ def fetch_bazos_categories():
     data = utils.fetch_bazos_categories(section)
     print("section is " + section + " a data su " + str(data))
     return jsonify(data)
+
+
+@ads.route('/ads/delete/<int:ad_id>')
+def delete_advertisement(ad_id):
+    ad = Advertisement.query.get_or_404(ad_id)
+    db.session.delete(ad)
+    db.session.commit()
+    return redirect(url_for('ads.advertisements'))

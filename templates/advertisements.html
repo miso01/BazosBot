@@ -26,15 +26,18 @@
                         </div>
                         <div class="col-md-8">
                             <div class="card-body">
-                                <h5 class="card-title">{{ ad.title }}</h5>
-                            <p class="card-text"><small class="text-muted">{{ ad.section }}</small> <small class="text-muted">{{ ad.category }}</small></p>
+                                <h5 class="card-title font-weight-bold text-elipssis">{{ ad.title }}</h5>
+                                    <small class="text-muted">{{ ad.section_text }}  >> </small>
+                                    <small class="text-muted">{{ ad.category_text }}</small>
                                 <p class="card-text">{{ ad.text }}</p>
+                                <h5>{{ ad.price }}€</h5>
                                 {% if ad.date_created != None %}
-                                    <p class="card-text"><small class="text-muted">{{ ad.date_created }}</small></p>
+                                    <p class="card-text"><small class="text-muted">Pridaný :{{ ad.date_created.strftime('%d.%m.%Y') }}</small></p>
+                                    <p class="card-text"><small class="text-muted">Refresh:{{ ad.date_refreshed }}</small></p>
                                 {% endif %}
                                 <div class="float-right">
-                                    <button type="button" class="btn btn-sm btn-secondary">Upraviť</button>
-                                    <button type="button" class="btn btn-sm btn-danger">Odstrániť</button>
+                                    <button type="button" class="btn btn-sm btn-secondary"><a style="color: white;" href="/ads/edit/{{ ad.id }}">Upraviť</a></button>
+                                    <button type="button" class="btn btn-sm btn-danger"><a  style="color: white;" href="/ads/delete/{{ ad.id }}">Odstrániť</a></button>
                                 </div>
                                 <br>
                             </div>

@@ -1,23 +1,26 @@
 from flask import Blueprint, request, render_template, redirect, jsonify, url_for
-from werkzeug.utils import secure_filename
 from datetime import datetime
-
 from ads.forms import AdForm
 from models import Advertisement, db
 import utils
+import flask_login
+from flask_login import current_user
 
 ads = Blueprint('ads', __name__)
 
 
 @ads.route('/ads')
+@flask_login.login_required
 def advertisements():
-    ads = Advertisement.query.all()
-    print("ads are toto " + str(ads))
+    user_id = current_user.get_id()
+    ads = Advertisement.query.filter_by(user_id=user_id).all()
+    print("ads are toto " + str(ads) + " a user id je " + str(user_id))
 
     return render_template('advertisements.html', ads=ads)
 
 
 @ads.route('/ads/add', methods=["POST", "GET"])
+@flask_login.login_required
 def add_advertisement():
     form = AdForm()
     if request.method == "POST":
@@ -30,18 +33,20 @@ def add_advertisement():
         print("text " + str(dict(request.values).get(form.category.data)) + " value   " + form.category.data)
 
         ad = Advertisement(
+            user_id=current_user.get_id(),
             section_value=form.section.data,
             section_text="Section Text",
             category_value=form.category.data,
             category_text="Category Text",
             title=form.title.data,
             text=form.text.data,
-            price=form.price.data,  # TODO validate
+            price=form.price.dta,  # TODO validate
             zip_code=form.zip_code.data,
             phone=form.phone.data,
             ad_password=form.ad_password.data,
             date_created=datetime.utcnow(),
             date_refreshed=datetime.utcnow())
+
         db.session.add(ad)
         db.session.commit()
         return redirect(url_for('ads.advertisements'))
@@ -49,6 +54,7 @@ def add_advertisement():
         return render_template('add_ad.html', form=form)
 
 
+@flask_login.login_required
 @ads.route('/ads/edit/<int:ad_id>', methods=["POST", "GET"])
 def edit_advertisement(ad_id):
     ad = Advertisement.query.get_or_404(ad_id)
@@ -72,6 +78,7 @@ def edit_advertisement(ad_id):
     pass
 
 
+@flask_login.login_required
 @ads.route('/fetch_bazos_categories/', methods=["POST"])
 def fetch_bazos_categories():
     section = request.values.get("section", None)
@@ -81,6 +88,7 @@ def fetch_bazos_categories():
     return jsonify(data)
 
 
+@flask_login.login_required
 @ads.route('/ads/delete/<int:ad_id>')
 def delete_advertisement(ad_id):
     ad = Advertisement.query.get_or_404(ad_id)

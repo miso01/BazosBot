@@ -21,13 +21,13 @@
     <div class="collapse navbar-collapse" id="navbarsExample09">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="{{ url_for('ads.advertisements') }}">Moje inzeráty<span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="{{ url_for('ads.advertisements', user_id=3) }}">Moje inzeráty<span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('ads.add_advertisement') }}">Pridať Inzerát</a>
         </li>
           <li class="nav-item">
-          <a class="nav-link" href="#">Odhlásiť sa</a>
+          <a class="nav-link" href="{{ url_for('auth.logout') }}">Odhlásiť sa</a>
         </li>
       </ul>
     </div>

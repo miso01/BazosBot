@@ -14,6 +14,7 @@ def create_app():
     db.init_app(app)
     login_manager.init_app(app)
 
+
     from auth.routes import auth
     from ads.routes import ads
     app.register_blueprint(auth)

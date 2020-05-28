@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from __init__ import db
 
 
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
@@ -21,16 +22,16 @@ class User(UserMixin, db.Model):
     created_on = db.Column(db.DateTime, nullable=False)
     last_login = db.Column(db.DateTime, nullable=False)
 
-    def get_id(self):
-        return self.id
 
 
 class Advertisement(db.Model):
     __tablename__ = "ads"
 
-    def __init__(self, section_text, section_value, category_text, category_value, title, text, price, zip_code, phone,
+    def __init__(self, user_id, section_text, section_value, category_text, category_value, title, text, price,
+                 zip_code, phone,
                  ad_password,
                  date_created, date_refreshed):
+        self.user_id = user_id
         self.section_text = section_text
         self.section_value = section_value
         self.category_text = category_text
@@ -47,6 +48,7 @@ class Advertisement(db.Model):
         db.session.commit()
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
     section_text = db.Column(db.String(60), nullable=False)
     section_value = db.Column(db.String(60), nullable=False)
     category_text = db.Column(db.String(60), nullable=False)

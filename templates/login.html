@@ -11,18 +11,18 @@
 {% block body %}
 
 
-    <div class="container">
+  <div class="d-flex vh-100">
+  <div class="d-flex w-100 justify-content-center align-self-center text-center">
+        <form method="POST" action="{{ url_for("auth.login") }}" class="auth-form" >
 
-        <form method="POST" action="{{ url_for("auth.login") }}" class="text-center">
-
-            <h1 class="app_title">BAZOŠ BOT</h1>
+            <div class="row justify-content-center m-0 p-0">
+            <img src="{{ url_for('static', filename='images/bazos_bot_logo.gif') }}" alt="Bazoš logo"
+                 class="app_logo">
+                <h1 class="app_title">Bazoš Bot</h1>
+            </div>
             <br>
-            <img src="{{ url_for('static', filename='images/bazos_logo.gif') }}" alt="Bazoš logo"
-                 style="width: 180px; height: auto;">
 
-            <br>
             {{ form.csrf_token }}
-            <br>
             {{ form.email(class='form-control', placeholder='Email') }}
             {% with errors = get_flashed_messages(category_filter=["email"]) %}
                 {% if errors %}
@@ -64,10 +64,9 @@
             {% endwith %}
             <br>
 
-            <h3>Ešte nemáš konto? </h3> <a href="{{ url_for('auth.register') }}">Registrovať sa</a>
+            <h6>Ešte nemáš konto? </h6> <a href="{{ url_for('auth.register') }}">Registrovať sa</a>
         </form>
-    </div>
-
-
+</div>
+</div>
 
 {% endblock %}

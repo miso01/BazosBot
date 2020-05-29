@@ -11,90 +11,93 @@
 {% block body %}
 
 
-    <div class="container">
-        <form method="POST" action="{{ url_for("auth.register") }}" class="text-center">
-            <h1 class="app_title">BAZOŠ BOT</h1>
+    <div class="d-flex vh-100">
+        <div class="d-flex w-100 justify-content-center align-self-center text-center">
+            <form method="POST" action="{{ url_for("auth.register") }}" class="auth-form">
+                <div class="row justify-content-center m-0 p-0">
+                    <img src="{{ url_for('static', filename='images/bazos_bot_logo.gif') }}" alt="Bazoš logo"
+                         class="app_logo">
+                    <h1 class="app_title">Bazoš Bot</h1>
+                </div>
             <br>
-            <img src="{{ url_for('static', filename='images/bazos_logo.gif') }}" alt="Bazoš logo"
-                 style="width: 180px; height: auto;">
-            <br>
-            {{ form.csrf_token }}
-            <br>
-            {{ form.username(class='form-control', placeholder='Použivateľské meno') }}
-            {% with errors = get_flashed_messages(category_filter=["username"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
+                {{ form.csrf_token }}
+                {{ form.username(class='form-control', placeholder='Použivateľské meno') }}
+                {% with errors = get_flashed_messages(category_filter=["username"]) %}
+                    {% if errors %}
+                        <ul>
+                            {%- for msg in errors %}
+                                {% for m  in msg %}
+                                    <li class="validation_error">{{ m }}</li>
+                                {% endfor %}
 
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
-            {{ form.email(class='form-control' , placeholder='Email') }}
-            {% with errors = get_flashed_messages(category_filter=["email"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
+                            {% endfor -%}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <br>
+                {{ form.email(class='form-control' , placeholder='Email') }}
+                {% with errors = get_flashed_messages(category_filter=["email"]) %}
+                    {% if errors %}
+                        <ul>
+                            {%- for msg in errors %}
+                                {% for m  in msg %}
+                                    <li class="validation_error">{{ m }}</li>
+                                {% endfor %}
 
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
-            {{ form.password(class='form-control' , placeholder='Heslo') }}
-         {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
+                            {% endfor -%}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <br>
+                {{ form.password(class='form-control' , placeholder='Heslo') }}
+                {% with errors = get_flashed_messages(category_filter=["password"]) %}
+                    {% if errors %}
+                        <ul>
+                            {%- for msg in errors %}
+                                {% for m  in msg %}
+                                    <li class="validation_error">{{ m }}</li>
+                                {% endfor %}
 
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
-            {{ form.confirm_password(class='form-control',   placeholder='Potvrď heslo') }}
-         {% with errors = get_flashed_messages(category_filter=["confirm_password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
+                            {% endfor -%}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <br>
+                {{ form.confirm_password(class='form-control',   placeholder='Potvrď heslo') }}
+                {% with errors = get_flashed_messages(category_filter=["confirm_password"]) %}
+                    {% if errors %}
+                        <ul>
+                            {%- for msg in errors %}
+                                {% for m  in msg %}
+                                    <li class="validation_error">{{ m }}</li>
+                                {% endfor %}
 
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
+                            {% endfor -%}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <br>
 
-            <button class="btn btn-lg btn-primary btn-block" style="background-color: #f94f08; border-color: #f94f08;"
-                    type="submit">Registrovať sa
-            </button>
+                <button class="btn btn-lg btn-primary btn-block"
+                        style="background-color: #f94f08; border-color: #f94f08;"
+                        type="submit">Registrovať sa
+                </button>
 
-            {% with errors = get_flashed_messages(category_filter=["auth"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
+                {% with errors = get_flashed_messages(category_filter=["auth"]) %}
+                    {% if errors %}
+                        <ul>
+                            {%- for msg in errors %}
                                 <li class="validation_error">{{ msg }}</li>
 
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
-            <h3>Už máš konto? </h3> <a href="{{ url_for('auth.login') }}">Prihlásiť sa</a>
+                            {% endfor -%}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+                <br>
+                <h6>Už máš konto? </h6> <a href="{{ url_for('auth.login') }}">Prihlásiť sa</a>
 
-        </form>
+            </form>
+        </div>
     </div>
 
 {% endblock %}

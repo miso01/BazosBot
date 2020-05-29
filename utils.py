@@ -40,4 +40,4 @@ def fetch_bazos_categories(section):
 
 def flash_forms_errors(form):
     for fld, msg in form.errors.items():
-        flash(category=fld, message=msg)
+        flash(message=msg)

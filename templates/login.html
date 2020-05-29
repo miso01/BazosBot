@@ -11,62 +11,73 @@
 {% block body %}
 
 
-  <div class="d-flex vh-100">
-  <div class="d-flex w-100 justify-content-center align-self-center text-center">
-        <form method="POST" action="{{ url_for("auth.login") }}" class="auth-form" >
 
-            <div class="row justify-content-center m-0 p-0">
-            <img src="{{ url_for('static', filename='images/bazos_bot_logo.gif') }}" alt="Bazoš logo"
-                 class="app_logo">
-                <h1 class="app_title">Bazoš Bot</h1>
-            </div>
-            <br>
 
-            {{ form.csrf_token }}
-            {{ form.email(class='form-control', placeholder='Email') }}
-            {% with errors = get_flashed_messages(category_filter=["email"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
+    <div class="d-flex vh-100">
 
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
-            {{ form.password(class='form-control', placeholder='Heslo') }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
+        <div class="d-flex w-100 justify-content-center align-self-center text-center">
+            <form method="POST" action="{{ url_for("auth.login") }}" class="auth-form">
 
-            <button class="btn btn-lg btn-primary btn-block" style="background-color: #f94f08; border-color: #f94f08;" type="submit">Prihlásiť sa
-            </button>
-            {% with errors = get_flashed_messages(category_filter=["auth"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            <li class="validation_error">{{ msg }}</li>
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
+                <div class="row justify-content-center m-0 p-0">
+                    <img src="{{ url_for('static', filename='images/bazos_bot_logo.gif') }}" alt="Bazoš logo"
+                         class="app_logo">
+                    <h1 class="app_title">Bazoš Bot</h1>
+                </div>
+                <br>
+                {{ form.csrf_token }}
+                {{ form.email(class='form-control', placeholder='Email') }}
+                <br>
+                {{ form.password(class='form-control', placeholder='Heslo') }}
+                <br>
+                <button class="btn btn-lg btn-primary btn-block"
+                        style="background-color: #f94f08; border-color: #f94f08;" type="submit">Prihlásiť sa
+                </button>
+                <br>
+                <h6>Ešte nemáš konto? </h6> <a href="{{ url_for('auth.register') }}">Registrovať sa</a>
 
-            <h6>Ešte nemáš konto? </h6> <a href="{{ url_for('auth.register') }}">Registrovať sa</a>
-        </form>
-</div>
-</div>
+
+                <br>
+                <br>
+                <br>
+
+
+               {% with errors = get_flashed_messages() %}
+                    {% if errors %}
+                        {% if errors|length > 1 %}
+                            <div class="alert alert-danger" role="alert">
+                                <ul>
+                                    {%- for msg in errors %}
+                                        {% for m  in msg %}
+                                            <li class="validation_error">{{ m }}</li>
+                                        {% endfor %}
+
+                                    {% endfor -%}
+                                </ul>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-danger" role="alert">
+                                <ul>
+                                    {%- for msg in errors %}
+                                        <li class="validation_error">{{ msg }}</li>
+                                    {% endfor -%}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endwith %}
+
+
+
+
+            </form>
+
+
+        </div>
+
+
+        </div>
+
+
+
 
 {% endblock %}

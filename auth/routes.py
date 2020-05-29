@@ -28,7 +28,7 @@ def register():
             login_user(user)
             return redirect(url_for('ads.advertisements'))
         else:
-            flash("Na tento e-mail už účet existuje.", category="auth")
+            flash("Na tento e-mail už účet existuje.")
             return render_template('register.html', form=form)
     else:
         flash_forms_errors(form)
@@ -48,10 +48,10 @@ def login():
                 login_user(user)
                 return redirect(url_for('ads.advertisements'))
             else:
-                flash("Heslo nie je správne.", category="auth")
+                flash("Heslo nie je správne.")
                 return render_template('login.html', form=form)
         else:
-            flash("Účet pre uvedený email neexistuje.", category="auth")
+            flash("Účet pre uvedený email neexistuje.",)
             return render_template('login.html', form=form)
 
     else:

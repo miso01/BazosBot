@@ -9,7 +9,6 @@ def fetch_bazos_sections():
     page = requests.get('https://auto.bazos.sk/pridat-inzerat.php')
     soup = BeautifulSoup(page.text, 'html.parser')
     sections_data = soup.find_all("select", {"name": "rubriky"})
-    print(sections_data)
     sections_text = []
     sections_values = []
     for option in sections_data[0].find_all('option'):
@@ -21,12 +20,9 @@ def fetch_bazos_sections():
 def fetch_bazos_categories(section):
     sct = section.translate(str.maketrans('', '', string.punctuation))
     sct.lower()
-    print(sct)
-
     page = requests.get('https://' + sct + '.bazos.sk/pridat-inzerat.php')
     soup = BeautifulSoup(page.text, 'html.parser')
     categories_data = soup.find_all("td", {"class": "listal"})
-    print(categories_data)
     categories_text = []
     categories_values = []
 
@@ -34,7 +30,6 @@ def fetch_bazos_categories(section):
         if "http" not in ctg["href"]:
             categories_text.append(ctg.text)
             categories_values.append(ctg["href"])
-            print(ctg.text)
     return list(zip(categories_values, categories_text))
 
 

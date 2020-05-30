@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config
 
-UPLOAD_FOLDER = '/uploads'
+UPLOAD_FOLDER = '/Users/michalsvec/projects/python/BazosBot/static/uploads'
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER

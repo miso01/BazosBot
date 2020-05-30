@@ -71,7 +71,7 @@
 
         <h3>Pridať inzerát</h3>
 
-        <form method="POST" action="{{ url_for("ads.add_advertisement") }}" class="text-center">
+        <form method="POST" action="{{ url_for("ads.add_advertisement") }}" enctype="multipart/form-data" class="text-center">
 
             {{ form.csrf_token }}
             <br>

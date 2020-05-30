@@ -10,6 +10,7 @@ from models import Advertisement, db
 import utils
 import flask_login
 from flask_login import current_user
+from __init__ import app
 
 ads = Blueprint('ads', __name__)
 
@@ -34,18 +35,7 @@ def add_advertisement():
         """ Custom validation for dynamic select field, wtforms doesnt support dynamic form validation"""
         if form.category.data:
 
-            # filename = secure_filename(form.image.data.filename)
-            # form.file.data.save('uploads/' + filename)
-
-            print(
-                "request je " + str(request.data) + "   a vals " + str(request.values) + " a files  " + str(
-                    request.files))
-
-            for file in request.files.getlist('image'):
-                print("file data " + str(file) + " a tajp  " + str(type(file)))
-                if file and allowed_file(file):
-                    filename = secure_filename(file)
-                    file.save(os.path.join("uploads/test", filename))
+            upload_files(form.image.data)
 
             category_text = utils.get_category_text_from_category_section_value(form.section.data, form.category.data)
 
@@ -133,3 +123,12 @@ def delete_advertisement(ad_id):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def upload_files(image_field_data):
+    if image_field_data:
+        image_data = request.files.getlist("image")
+        print("image data" + str(image_data))
+        for img in image_data:
+            filename = secure_filename(img.filename)
+            img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))

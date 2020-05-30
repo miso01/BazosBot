@@ -10,6 +10,37 @@
 
 
     <script>
+
+        function onImageUpload() {
+            let preview = document.getElementById("preview");
+            let imageField = document.getElementById("image");
+            let innerHTML = '';
+
+            for (let img of imageField.files) {
+                let reader = new FileReader();
+
+                reader.readAsDataURL(img);
+                reader.onload = function (e) {
+                    // get loaded data and render thumbnail.
+                    innerHTML += "<img class='image_preview' src=" + e.target.result + ">" + "</img>";
+
+                    preview.innerHTML = innerHTML;
+                    console.log("called na ochagne");
+                };
+            }
+
+            // add br after the preview div
+            let br = document.createElement("br");
+            insertAfter(preview, br);
+
+
+        }
+
+        function insertAfter(referenceNode, newNode) {
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        }
+
+
         function onSectionChanged() {
 
             let sectionsSelector = document.getElementById("section_select")
@@ -27,40 +58,16 @@
                     let optionHTML = "";
 
                     for (let category of data.categories) {
-                        optionHTML += '<option value="' + category.value + '">' + category.category_text + '</option>'
+                        optionHTML += '<option class="image_preview" value="' + category.value + '">' + category.category_text + '</option>'
                     }
 
                     categoriesSelector.innerHTML = optionHTML;
                     console.log("data setted");
                 });
             })
-
-
-            {#  $.ajax({
-                  type: 'POST',
-                  url: {{ url_for('ads.fetch_bazos_categories')}},
-                  data: {'section': selector.value},
-                  dataType: 'json',
-                  success: function (response) {
-                      $('#categories_select')
-                          .find('option')
-                          .remove()
-                          .end()
-                      console.log(response);
-                      var i;
-                      console.log("response length je " + response.length)
-                      for (i = 0; i < response.length; i++) {
-                          var $option = $("<option/>", {
-                              key: "Stuck on boot logo",
-                              value:  response[i][0],
-                              text:  response[i][1]
-                          });
-                          $('#categories_select').append($option);
-
-                      }
-                  },
-              });#}
         }
+
+
     </script>
 
 
@@ -71,7 +78,8 @@
 
         <h3>Pridať inzerát</h3>
 
-        <form method="POST" action="{{ url_for("ads.add_advertisement") }}" enctype="multipart/form-data" class="text-center">
+        <form method="POST" action="{{ url_for("ads.add_advertisement") }}" enctype="multipart/form-data"
+              class="text-center">
 
             {{ form.csrf_token }}
             <br>
@@ -89,8 +97,10 @@
             <br>
             {{ form.zip_code(class='form-control', placeholder='PSČ' , style='max-width: 150px;') }}
             <br>
-            {{ form.image(class='form-control', placeholder='Pridaj fotky', enctype="multipart/form-data") }}
+            {{ form.image(class="d-flex align-content-start", placeholder='Pridaj fotky', onchange="onImageUpload()") }}
             <br>
+            <div class="d-flex align-content-start flex-wrap" id="preview"></div>
+
             {{ form.phone(class='form-control', placeholder='Mobilné číslo', style='max-width: 250px;') }}
             <br>
             {{ form.ad_password(class='form-control', placeholder='Heslo inzerátu', style='max-width: 250px;') }}

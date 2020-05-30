@@ -33,4 +33,11 @@
     margin: 16px;
 }
 
+.image_preview{
+    width: 100px;
+    height: auto;
+    border: 2px solid #f94f08;
+    margin: 10px;
+}
+
 

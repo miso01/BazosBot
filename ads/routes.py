@@ -1,5 +1,10 @@
-from flask import Blueprint, request, render_template, redirect, jsonify, url_for
+import os
+
+from flask import Blueprint, request, render_template, redirect, jsonify, url_for, flash
 from datetime import datetime
+
+from werkzeug.utils import secure_filename
+
 from ads.forms import AdForm
 from models import Advertisement, db
 import utils
@@ -7,6 +12,8 @@ import flask_login
 from flask_login import current_user
 
 ads = Blueprint('ads', __name__)
+
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 
 @ads.route('/ads')
@@ -23,39 +30,53 @@ def advertisements():
 @flask_login.login_required
 def add_advertisement():
     form = AdForm()
-    if request.method == "POST":
-        # filename = secure_filename(form.image.data.filename)
-        # form.file.data.save('uploads/' + filename)
+    if form.validate_on_submit():
+        """ Custom validation for dynamic select field, wtforms doesnt support dynamic form validation"""
+        if form.category.data:
 
-        print("choices " + str(form.section.choices))
-        print("choices " + str(form.category.choices))
-        print("text " + str(dict(form.section.choices).get(form.section.data)) + " value   " + form.section.data)
-        print("text " + str(dict(request.values).get(form.category.data)) + " value   " + form.category.data)
+            # filename = secure_filename(form.image.data.filename)
+            # form.file.data.save('uploads/' + filename)
 
-        ad = Advertisement(
-            user_id=current_user.get_id(),
-            section_value=form.section.data,
-            section_text="Section Text",
-            category_value=form.category.data,
-            category_text="Category Text",
-            title=form.title.data,
-            text=form.text.data,
-            price=form.price.dta,  # TODO validate
-            zip_code=form.zip_code.data,
-            phone=form.phone.data,
-            ad_password=form.ad_password.data,
-            date_created=datetime.utcnow(),
-            date_refreshed=datetime.utcnow())
+            print(
+                "request je " + str(request.data) + "   a vals " + str(request.values) + " a files  " + str(
+                    request.files))
 
-        db.session.add(ad)
-        db.session.commit()
-        return redirect(url_for('ads.advertisements'))
+            for file in request.files.getlist('image'):
+                print("file data " + str(file) + " a tajp  " + str(type(file)))
+                if file and allowed_file(file):
+                    filename = secure_filename(file)
+                    file.save(os.path.join("uploads/test", filename))
+
+            category_text = utils.get_category_text_from_category_section_value(form.section.data, form.category.data)
+
+            ad = Advertisement(
+                user_id=current_user.get_id(),
+                section_value=form.section.data,
+                section_text=str(dict(form.section.choices).get(form.section.data)),
+                category_value=form.category.data,
+                category_text=category_text,
+                title=form.title.data,
+                text=form.text.data,
+                price=form.price.data,  # TODO validate
+                zip_code=form.zip_code.data,
+                phone=form.phone.data,
+                ad_password=form.ad_password.data,
+                date_created=datetime.utcnow(),
+                date_refreshed=datetime.utcnow())
+
+            db.session.add(ad)
+            db.session.commit()
+            return redirect(url_for('ads.advertisements'))
+        else:
+            flash("K pridaniu inzerátu je potrebné zvoliť kategóriu.")
+            return render_template('add_ad.html', form=form)
     else:
+        utils.flash_forms_errors(form)
         return render_template('add_ad.html', form=form)
 
 
-@flask_login.login_required
 @ads.route('/ads/edit/<int:ad_id>', methods=["POST", "GET"])
+@flask_login.login_required
 def edit_advertisement(ad_id):
     ad = Advertisement.query.get_or_404(ad_id)
     form = AdForm()
@@ -78,20 +99,37 @@ def edit_advertisement(ad_id):
     pass
 
 
+@ads.route('/ads/<int:ad_id>')
 @flask_login.login_required
-@ads.route('/fetch_bazos_categories/', methods=["POST"])
-def fetch_bazos_categories():
-    section = request.values.get("section", None)
+def ad_detail(ad_id):
+    ad = Advertisement.query.filter_by(id=ad_id).first()
+    return render_template('ad_detail.html', ad=ad)
+
+
+@ads.route('/fetch_bazos_categories/<section>', methods=["POST", 'GET'])
+@flask_login.login_required
+def fetch_bazos_categories(section):
+    # section = request.values.get("section", None)
     print("request values are + " + str(request.values))
-    data = utils.fetch_bazos_categories(section)
-    print("section is " + section + " a data su " + str(data))
-    return jsonify(data)
+    data = utils.fetch_bazos_categories(str(section))
+    categories = []
+    for category in data:
+        value = category[0].replace("/", "")
+        ctg = {"value": value, "category_text": category[1]}
+        categories.append(ctg)
+
+    return jsonify({"categories": categories})
 
 
-@flask_login.login_required
 @ads.route('/ads/delete/<int:ad_id>')
+@flask_login.login_required
 def delete_advertisement(ad_id):
     ad = Advertisement.query.get_or_404(ad_id)
     db.session.delete(ad)
     db.session.commit()
     return redirect(url_for('ads.advertisements'))
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

@@ -10,45 +10,69 @@
 
 {% block body %}
 
-    {% for ad in ads %}
-        <br>
-        <div class="container">
-            <div class="cd-example">
-                <div class="card mb-3">
-                    <div class="row no-gutters">
-                        <div class="col-md-4">
-                            <svg class="bd-placeholder-img" width="100%" height="250" xmlns="http://www.w3.org/2000/svg"
-                                 aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img"><title>
-                                Placeholder</title>
-                                <rect width="100%" height="100%" fill="#868e96"></rect>
-                                <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text>
-                            </svg>
-                        </div>
-                        <div class="col-md-8">
-                            <div class="card-body">
-                                <h5 class="card-title font-weight-bold text-elipssis">{{ ad.title }}</h5>
-                                    <small class="text-muted">{{ ad.section_text }}  >> </small>
+         <script>
+        function showDetail(id) {
+            document.getElementById("ad_title").onclick = function () {
+                location.href = "ads/"+ id;
+            };
+
+        }
+    </script>
+
+    {% if ads %}
+        {% for ad in ads %}
+            <br>
+            <div class="container">
+                <div class="cd-example">
+                    <div class="card mb-3">
+                        <div class="row no-gutters">
+                            <div onclick="showDetail({{ ad.id }})" class="col-md-4">
+                                <svg class="bd-placeholder-img" width="100%" height="250"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img">
+                                    <title>
+                                        Placeholder</title>
+                                    <rect width="100%" height="100%" fill="#868e96"></rect>
+                                    <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text>
+                                </svg>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 id="ad_title" onclick="showDetail({{ ad.id }})" class="card-title font-weight-bold text-elipssis">{{ ad.title }}</h5>
+                                    <small class="text-muted">{{ ad.section_text }} >> </small>
                                     <small class="text-muted">{{ ad.category_text }}</small>
-                                <p class="card-text">{{ ad.text }}</p>
-                                <h5>{{ ad.price }}€</h5>
-                                {% if ad.date_created != None %}
-                                    <p class="card-text"><small class="text-muted">Pridaný :{{ ad.date_created.strftime('%d.%m.%Y') }}</small></p>
-                                    <p class="card-text"><small class="text-muted">Refresh:{{ ad.date_refreshed }}</small></p>
-                                {% endif %}
-                                <div class="float-right">
-                                    <button type="button" class="btn btn-sm btn-secondary"><a style="color: white;" href="/ads/edit/{{ ad.id }}">Upraviť</a></button>
-                                    <button type="button" class="btn btn-sm btn-danger"><a  style="color: white;" href="/ads/delete/{{ ad.id }}">Odstrániť</a></button>
+                                    <p class="card-text">{{ ad.text }}</p>
+                                    <h5>{{ ad.price }}€</h5>
+                                    {% if ad.date_created != None %}
+                                        <p class="card-text"><small class="text-muted">Pridaný
+                                            :{{ ad.date_created.strftime('%d.%m.%Y') }}</small></p>
+                                        <p class="card-text"><small
+                                                class="text-muted">Refresh:{{ ad.date_refreshed }}</small></p>
+                                    {% endif %}
+                                    <div class="float-right">
+                                        <button type="button" class="btn btn-sm btn-secondary"><a style="color: white;"
+                                                                                                  href="/ads/edit/{{ ad.id }}">Upraviť</a>
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-danger"><a style="color: white;"
+                                                                                               href="/ads/delete/{{ ad.id }}">Odstrániť</a>
+                                        </button>
+                                    </div>
+                                    <br>
                                 </div>
-                                <br>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning m-4" role="alert">
+            Ešte nemáš pridané žiadne inzeráty...
         </div>
 
-
-    {% endfor %}
+    {% endif %}
 
 
 

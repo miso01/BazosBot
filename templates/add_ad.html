@@ -8,194 +8,124 @@
 
 {% block body %}
 
-    <script>
-        function val() {
 
-            var selector = document.getElementById("section_select")
-            $.ajax({
-                type: 'POST',
-                url: {{ url_for('ads.fetch_bazos_categories')}},
-                data: {'section': selector.value},
-                dataType: 'json',
-                success: function (response) {
-                    $('#categories_select')
-                        .find('option')
-                        .remove()
-                        .end()
-                    console.log(response);
-                    var i;
-                    console.log("response length je " + response.length)
-                    for (i = 0; i < response.length; i++) {
-                        $('#categories_select')
-                            .append($("<option></option>")
-                                .attr("value", response[i][0])
-                                .text(response[i][1]));
+    <script>
+        function onSectionChanged() {
+
+            let sectionsSelector = document.getElementById("section_select")
+            let categoriesSelector = document.getElementById("categories_select")
+
+            console.log("started");
+            const section = sectionsSelector.value;
+            console.log(section);
+
+            //TODO Fix workaround
+            fetch("{{ url_for('ads.fetch_bazos_categories',section="value")}}".replace("value", section)).then(function (response) {
+                console.log("fetch started");
+
+                response.json().then(function (data) {
+                    let optionHTML = "";
+
+                    for (let category of data.categories) {
+                        optionHTML += '<option value="' + category.value + '">' + category.category_text + '</option>'
                     }
-                },
-            });
+
+                    categoriesSelector.innerHTML = optionHTML;
+                    console.log("data setted");
+                });
+            })
+
+
+            {#  $.ajax({
+                  type: 'POST',
+                  url: {{ url_for('ads.fetch_bazos_categories')}},
+                  data: {'section': selector.value},
+                  dataType: 'json',
+                  success: function (response) {
+                      $('#categories_select')
+                          .find('option')
+                          .remove()
+                          .end()
+                      console.log(response);
+                      var i;
+                      console.log("response length je " + response.length)
+                      for (i = 0; i < response.length; i++) {
+                          var $option = $("<option/>", {
+                              key: "Stuck on boot logo",
+                              value:  response[i][0],
+                              text:  response[i][1]
+                          });
+                          $('#categories_select').append($option);
+
+                      }
+                  },
+              });#}
         }
     </script>
 
-    <div class="float-left col-4">
+
+
+    <div class="container">
+
+        <br>
 
         <h3>Pridať inzerát</h3>
 
         <form method="POST" action="{{ url_for("ads.add_advertisement") }}" class="text-center">
 
-            <br>
             {{ form.csrf_token }}
             <br>
-            {{ form.section(class='form-control', placeholder='Rubrika',onchange="val()" ,id="section_select") }}
-            {% with errors = get_flashed_messages(category_filter=["email"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+            {{ form.section(class='form-control', onchange="onSectionChanged()", placeholder='Rubrika',id="section_select", style='max-width: 400px;') }}
             <br>
-            {{ form.category(class='form-control', placeholder='Kategória', id="categories_select") }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-
-
+            {{ form.category(class='form-control', placeholder='Kategória', id="categories_select", style='max-width: 400px;') }}
             <br>
-            {{ form.title(class='form-control', placeholder='Nádpis') }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+            {{ form.title(class='form-control', placeholder='Nádpis', style='max-width: 600px;') }}
             <br>
-        <div class="form-group">
-            {{ form.text(class='form-control', placeholder='Text', id="exampleFormControlTextarea1",rows="3") }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-        </div>
+            {{ form.text(class='form-control', placeholder='Text',rows="3") }}
             <br>
-
-
-            {{ form.price(class='form-control', placeholder='Cena v €') }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+            {{ form.price(class='form-control', placeholder='Cena v €', style='max-width: 150px;') }}
             <br>
-            {{ form.price_select(class='form-control', placeholder='Rubrika') }}
-            {% with errors = get_flashed_messages(category_filter=["email"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+            {{ form.price_select(class='form-control', placeholder='Rubrika', style='max-width: 150px;') }}
             <br>
-            {{ form.zip_code(class='form-control', placeholder='PSČ') }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+            {{ form.zip_code(class='form-control', placeholder='PSČ' , style='max-width: 150px;') }}
             <br>
-        {{ form.image( placeholder='Pridaj fotky') }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+            {{ form.image(class='form-control', placeholder='Pridaj fotky', enctype="multipart/form-data") }}
             <br>
+            {{ form.phone(class='form-control', placeholder='Mobilné číslo', style='max-width: 250px;') }}
             <br>
-            {{ form.phone(class='form-control', placeholder='Mobilné číslo') }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
+            {{ form.ad_password(class='form-control', placeholder='Heslo inzerátu', style='max-width: 250px;') }}
             <br>
-            {{ form.ad_password(class='form-control', placeholder='Heslo inzerátu') }}
-            {% with errors = get_flashed_messages(category_filter=["password"]) %}
-                {% if errors %}
-                    <ul>
-                        {%- for msg in errors %}
-                            {% for m  in msg %}
-                                <li class="validation_error">{{ m }}</li>
-                            {% endfor %}
-
-                        {% endfor -%}
-                    </ul>
-                {% endif %}
-            {% endwith %}
-            <br>
-        <button class="btn btn-lg btn-primary btn-block" style="background-color: #f94f08; border-color: #f94f08;"
+            <button class="btn btn-lg btn-primary btn-block" style="background-color: #f94f08; border-color: #f94f08;"
                     type="submit">Pridať inzerát
             </button>
             <br>
+            <br>
+            <br>
+
+            {% with errors = get_flashed_messages() %}
+                {% if errors %}
+                    {% if errors|length > 1 %}
+                        <div class="alert alert-danger" role="alert">
+                            <ul>
+                                {%- for msg in errors %}
+                                    {% for m  in msg %}
+                                        <li class="validation_error">{{ m }}</li>
+                                    {% endfor %}
+
+                                {% endfor -%}
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger" role="alert">
+                            <ul>
+                                {%- for msg in errors %}
+                                    <li class="validation_error">{{ msg }}</li>
+                                {% endfor -%}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            {% endwith %}
 
         </form>
     </div>

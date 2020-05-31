@@ -27,14 +27,9 @@
                     <div class="card mb-3">
                         <div class="row no-gutters">
                             <div onclick="showDetail({{ ad.id }})" class="col-md-4">
-                                <svg class="bd-placeholder-img" width="100%" height="250"
-                                     xmlns="http://www.w3.org/2000/svg"
-                                     aria-label="Placeholder: Image" preserveAspectRatio="xMidYMid slice" role="img">
-                                    <title>
-                                        Placeholder</title>
-                                    <rect width="100%" height="100%" fill="#868e96"></rect>
-                                    <text x="50%" y="50%" fill="#dee2e6" dy=".3em">Image</text>
-                                </svg>
+                                <img class="ad_image" width="100%" height="280px" src="{{ url_for("static", filename=ad.image_paths[0]) }}">
+
+
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">

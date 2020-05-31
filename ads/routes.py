@@ -1,9 +1,12 @@
+import json
 import os
 
 from flask import Blueprint, request, render_template, redirect, jsonify, url_for, flash
 from datetime import datetime
 
+from sqlalchemy.exc import ProgrammingError
 from werkzeug.utils import secure_filename
+from sqlalchemy.sql import func
 
 from ads.forms import AdForm
 from models import Advertisement, db
@@ -11,6 +14,7 @@ import utils
 import flask_login
 from flask_login import current_user
 from __init__ import app
+import pathlib
 
 ads = Blueprint('ads', __name__)
 
@@ -22,10 +26,10 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 def advertisements():
     user_id = current_user.get_id()
     ads = Advertisement.query.filter_by(user_id=user_id).all()
-    print("ads are toto " + str(ads) + " a user id je " + str(user_id))
+    for ad in ads:
+        ad.image_paths = ad.image_paths.replace("{", "").replace("}","").split(",")
 
     return render_template('advertisements.html', ads=ads)
-
 
 @ads.route('/ads/add', methods=["POST", "GET"])
 @flask_login.login_required
@@ -35,9 +39,11 @@ def add_advertisement():
         """ Custom validation for dynamic select field, wtforms doesnt support dynamic form validation"""
         if form.category.data:
 
-            upload_files(form.image.data)
-
             category_text = utils.get_category_text_from_category_section_value(form.section.data, form.category.data)
+
+
+
+
 
             ad = Advertisement(
                 user_id=current_user.get_id(),
@@ -47,14 +53,21 @@ def add_advertisement():
                 category_text=category_text,
                 title=form.title.data,
                 text=form.text.data,
+                image_paths=[],
                 price=form.price.data,  # TODO validate
                 zip_code=form.zip_code.data,
                 phone=form.phone.data,
                 ad_password=form.ad_password.data,
                 date_created=datetime.utcnow(),
                 date_refreshed=datetime.utcnow())
-
             db.session.add(ad)
+            db.session.flush()
+
+            print("ad id after flush je " + str(ad.id))
+            image_paths = upload_files(form.image.data, ad.id)
+
+            ad.image_paths = image_paths
+
             db.session.commit()
             return redirect(url_for('ads.advertisements'))
         else:
@@ -99,7 +112,6 @@ def ad_detail(ad_id):
 @ads.route('/fetch_bazos_categories/<section>', methods=["POST", 'GET'])
 @flask_login.login_required
 def fetch_bazos_categories(section):
-    # section = request.values.get("section", None)
     print("request values are + " + str(request.values))
     data = utils.fetch_bazos_categories(str(section))
     categories = []
@@ -125,10 +137,15 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def upload_files(image_field_data):
+def upload_files(image_field_data, ad_id):
+    image_paths = []
     if image_field_data:
         image_data = request.files.getlist("image")
         print("image data" + str(image_data))
-        for img in image_data:
-            filename = secure_filename(img.filename)
-            img.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        if len(image_data) > 0:
+            os.mkdir(os.path.join(app.config['UPLOAD_FOLDER'] + "/" + str(ad_id)))
+            for img in image_data:
+                filename = secure_filename(img.filename)
+                img.save(os.path.join(app.config['UPLOAD_FOLDER'] + "/" + str(ad_id), filename))
+                image_paths.append("uploads/" + str(ad_id) + "/" + str(filename))
+    return image_paths

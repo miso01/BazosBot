@@ -28,4 +28,9 @@ def create_app():
     app.register_blueprint(auth)
     app.register_blueprint(ads)
 
+    with app.app_context():
+        db.create_all()
+        db.session.commit()
+        print("called a vytvorene")
+
     return app

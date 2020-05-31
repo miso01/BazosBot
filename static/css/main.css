@@ -33,6 +33,11 @@
     margin: 16px;
 }
 
+.ad_image{
+  display: block;
+  object-fit: cover;
+}
+
 .image_preview{
     width: 100px;
     height: auto;

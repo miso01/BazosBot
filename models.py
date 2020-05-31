@@ -2,7 +2,6 @@ from flask_login import UserMixin
 from __init__ import db
 
 
-
 class User(UserMixin, db.Model):
     __tablename__ = "users"
 
@@ -12,8 +11,6 @@ class User(UserMixin, db.Model):
         self.password = password
         self.created_on = created_on
         self.last_login = last_login
-        db.create_all()
-        db.session.commit()
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), nullable=False)
@@ -23,12 +20,11 @@ class User(UserMixin, db.Model):
     last_login = db.Column(db.DateTime, nullable=False)
 
 
-
 class Advertisement(db.Model):
     __tablename__ = "ads"
 
     def __init__(self, user_id, section_text, section_value, category_text, category_value, title, text, price,
-                 zip_code, phone,
+                 zip_code, image_paths, phone,
                  ad_password,
                  date_created, date_refreshed):
         self.user_id = user_id
@@ -40,12 +36,11 @@ class Advertisement(db.Model):
         self.text = text
         self.price = price
         self.zip_code = zip_code
+        self.image_paths = image_paths
         self.phone = phone
         self.ad_password = ad_password
         self.date_created = date_created
         self.date_refresh = date_refreshed
-        db.create_all()
-        db.session.commit()
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
@@ -57,6 +52,7 @@ class Advertisement(db.Model):
     text = db.Column(db.Text(), nullable=False)
     price = db.Column(db.String(20), nullable=False)
     zip_code = db.Column(db.String(10), nullable=False)
+    image_paths = db.Column(db.Text(), nullable=False)
     phone = db.Column(db.String(20), nullable=False)
     ad_password = db.Column(db.String(30), nullable=False)
     date_created = db.Column(db.DateTime(), nullable=False)

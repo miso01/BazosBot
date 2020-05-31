@@ -28,21 +28,28 @@
 }
 
 
-.auth-form{
+.auth-form {
     width: 400px;
     margin: 16px;
 }
 
-.ad_image{
-  display: block;
-  object-fit: cover;
+.ad_image {
+    display: block;
+    object-fit: cover;
 }
 
-.image_preview{
+.image_preview {
     width: 100px;
     height: auto;
     border: 2px solid #f94f08;
     margin: 10px;
+}
+
+.ellipsis {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
 }
 
 

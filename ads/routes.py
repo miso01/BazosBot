@@ -106,6 +106,8 @@ def edit_advertisement(ad_id):
 @flask_login.login_required
 def ad_detail(ad_id):
     ad = Advertisement.query.filter_by(id=ad_id).first()
+    ad.image_paths = ad.image_paths.replace("{", "").replace("}", "").split(",")
+
     return render_template('ad_detail.html', ad=ad)
 
 

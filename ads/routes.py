@@ -4,6 +4,7 @@ from flask import Blueprint, request, render_template, redirect, jsonify, url_fo
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from ads.forms import AdForm
+from bazos_http import BazosHttp
 from models import Advertisement, db
 import utils
 import flask_login
@@ -17,65 +18,10 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 @ads.route('/ed')
 def ed():
-    url = "https://elektro.bazos.sk/insert.php"
+    bh = BazosHttp()
+    bh.post_advertisement("https://elektro.bazos.sk/")
 
-    #upload_images_to_bazos("https://elektro.bazos.sk")
-    load_form()
 
-    # files = {
-    #     "files[]": open(
-    #         "static/uploads/7/d_4x3inb78a8gsz1qvqv4n84534456.jpeg", 'rb'),
-    # }
-    #
-    # headers = {
-    #     'authority': 'elektro.bazos.sk',
-    #     'cache-control': 'max-age=0',
-    #     'upgrade-insecure-requests': '1',
-    #     'origin': 'https://elektro.bazos.sk',
-    #     'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
-    #     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-    #     'sec-fetch-site': 'same-origin',
-    #     'sec-fetch-mode': 'navigate',
-    #     'sec-fetch-user': '?1',
-    #     'sec-fetch-dest': 'document',
-    #     'referer': 'https://elektro.bazos.sk/pridat-inzerat.php',
-    #     'accept-language': 'sk-SK,sk;q=0.9,cs;q=0.8,en-US;q=0.7,en;q=0.6',
-    #     'cookie': '_ga=GA1.2.1388617534.1590739305; __gfp_64b=9SqKXQEikg2hyptJMf.uA.H_qXz0i8qdzptYc0rBJor.C7; bkod=061S9KQLK8; bid=35707664; _gid=GA1.2.1410804962.1591029867; testcookie=ano; bmail=michal.svecko22%40gmail.com; btelefon=0948077165; bheslo=101478; bjmeno=Michal; fucking-eu-cookies=1; _gat_gtag_UA_58407_7=1'
-    # }
-    #
-    # payload = {
-    #     "category": "399",
-    #     "nadpis": "Predám bluetooth slúchadlá QCY Q29",
-    #     "popis": "Predám bluetooth slúchadlá QCY Q29.Komplet príslušenstvo, bez poškodenia, vyčistené.Používané len doma pri PC.V priemere tak hodinu týždenne.",
-    #     "cena": "22",
-    #     "cenavyber": "1",
-    #     "lokalita": "01306",
-    #     "jmeno": "Michal",
-    #
-    #     "telefoni": "0948077165",
-    #     "maili": "michal.svecko22@gmail.com",
-    #     "heslobazar": "101478",
-    #     "rterte": "gdfgdfga",
-    #     "Submit": "Odoslať",
-    # }
-    #
-    # r = requests.post(url, headers=headers, data=payload)
-    #
-    # print("raw " + str(r.raw))
-    # print("content " + str(r.content))
-    # print("text " + str(r.text))
-    # print("links " + str(r.links))
-    # print("next " + str(r.next))
-    # print("ok " + str(r.ok))
-    # print("headers " + str(r.headers))
-    # print("request " + str(r.request))
-    # print("status code " + str(r.status_code))
-    # print("reason " + str(r.reason))
-    # print("url " + str(r.url))
-    # print("cookies " + str(r.cookies))
-    # print("encoding  " + str(r.encoding))
-    # print("hisotry " + str(r.history))
-    # print("elapsed " + str(r.elapsed))
 
     return "Pridany unzerat"
 
@@ -209,70 +155,19 @@ def upload_files(image_field_data, ad_id):
     return image_paths
 
 
-def upload_images_to_bazos(base_url):
-    endpoint = "/upload.php"
-
-    headers = {
-        'authority': 'elektro.bazos.sk',
-        'cache-control': 'max-age=0',
-        'upgrade-insecure-requests': '1',
-        'origin': 'https://elektro.bazos.sk',
-        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'sec-fetch-site': 'same-origin',
-        'sec-fetch-mode': 'navigate',
-        'sec-fetch-user': '?1',
-        'sec-fetch-dest': 'document',
-        'referer': 'https://elektro.bazos.sk/pridat-inzerat.php',
-        'accept-language': 'sk-SK,sk;q=0.9,cs;q=0.8,en-US;q=0.7,en;q=0.6',
-        'cookie': '_ga=GA1.2.1388617534.1590739305; __gfp_64b=9SqKXQEikg2hyptJMf.uA.H_qXz0i8qdzptYc0rBJor.C7; bkod=061S9KQLK8; bid=35707664; _gid=GA1.2.1410804962.1591029867; testcookie=ano; bmail=michal.svecko22%40gmail.com; btelefon=0948077165; bheslo=101478; bjmeno=Michal; fucking-eu-cookies=1; _gat_gtag_UA_58407_7=1'
-    }
-
-    with open('static/uploads/7/d_4x3inb78a8gsz1qvqv4n84534456.jpeg', 'rb') as f:
-        f.seek(0)  # Go back to the starting position
-
-        body = {
-            "file[0]": f.read()
-        }
-
-        r = requests.post(base_url + endpoint, headers=headers, files=body)
-
-        print("raw " + str(r.raw))
-        print("content " + str(r.content))
-        print("text " + str(r.text))
-        print("links " + str(r.links))
-        print("next " + str(r.next))
-        print("ok " + str(r.ok))
-        print("headers " + str(r.headers))
-        print("request " + str(r.request))
-        print("status code " + str(r.status_code))
-        print("reason " + str(r.reason))
-        print("url " + str(r.url))
-        print("cookies " + str(r.cookies))
-        print("encoding  " + str(r.encoding))
-        print("hisotry " + str(r.history))
-        print("elapsed " + str(r.elapsed))
-
-
-def load_form():
-    url = "https://mobil.bazos.sk/pridat-inzerat.php"
-
-    headers = {
-        'authority': 'elektro.bazos.sk',
-        'cache-control': 'max-age=0',
-        'upgrade-insecure-requests': '1',
-        'origin': 'https://elektro.bazos.sk',
-        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'sec-fetch-site': 'same-origin',
-        'sec-fetch-mode': 'navigate',
-        'sec-fetch-user': '?1',
-        'sec-fetch-dest': 'document',
-        'referer': 'https://elektro.bazos.sk/pridat-inzerat.php',
-        'accept-language': 'sk-SK,sk;q=0.9,cs;q=0.8,en-US;q=0.7,en;q=0.6',
-        'cookie': '_ga=GA1.2.1388617534.1590739305; __gfp_64b=9SqKXQEikg2hyptJMf.uA.H_qXz0i8qdzptYc0rBJor.C7; bkod=061S9KQLK8; bid=35707664; _gid=GA1.2.1410804962.1591029867; testcookie=ano; bmail=michal.svecko22%40gmail.com; btelefon=0948077165; bheslo=101478; bjmeno=Michal; fucking-eu-cookies=1; _gat_gtag_UA_58407_7=1'
-    }
-
-    r = requests.get(url, headers=headers)
-    print(r.text)
-    r
+def log_request(r):
+    print("raw " + str(r.raw))
+    print("content " + str(r.content))
+    print("text " + str(r.text))
+    print("links " + str(r.links))
+    print("next " + str(r.next))
+    print("ok " + str(r.ok))
+    print("headers " + str(r.headers))
+    print("request " + str(r.request))
+    print("status code " + str(r.status_code))
+    print("reason " + str(r.reason))
+    print("url " + str(r.url))
+    print("cookies " + str(r.cookies))
+    print("encoding  " + str(r.encoding))
+    print("hisotry " + str(r.history))
+    print("elapsed " + str(r.elapsed))

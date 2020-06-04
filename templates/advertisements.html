@@ -10,6 +10,8 @@
 
 {% block body %}
 
+    <button><a href="{{ url_for('ads.ed') }}">Pridaj inzerát</a></button>
+
     {% if ads %}
         {% for ad in ads %}
             <br>

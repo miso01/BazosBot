@@ -1,5 +1,4 @@
 import os
-import requests
 from flask import Blueprint, request, render_template, redirect, jsonify, url_for, flash
 from datetime import datetime
 from werkzeug.utils import secure_filename
@@ -19,7 +18,9 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 @ads.route('/ed')
 def ed():
     bh = BazosHttp()
-    bh.post_advertisement("https://elektro.bazos.sk/")
+    #bh.post_advertisement("https://elektro.bazos.sk/")
+    idcko = bh.get_advertisement_id("ddd")
+    print(idcko)
 
 
 
@@ -117,7 +118,7 @@ def ad_detail(ad_id):
 @flask_login.login_required
 def fetch_bazos_categories(section):
     print("request values are + " + str(request.values))
-    data = utils.fetch_bazos_categories(str(section))
+    data = BazosHttp().fetch_bazos_categories(str(section))
     categories = []
     for category in data:
         value = category[0].replace("/", "")

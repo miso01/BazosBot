@@ -44,6 +44,7 @@ class Advertisement(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
+    bazos_id = db.Column(db.String(30), nullable=True)
     section_text = db.Column(db.String(60), nullable=False)
     section_value = db.Column(db.String(60), nullable=False)
     category_text = db.Column(db.String(60), nullable=False)

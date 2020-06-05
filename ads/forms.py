@@ -3,9 +3,9 @@ from flask_wtf.file import FileRequired, FileAllowed
 from wtforms import StringField, PasswordField, SelectField, validators, IntegerField, MultipleFileField
 from wtforms.widgets import TextArea
 
-import utils
+from bazos_http import BazosHttp
 
-sections = utils.fetch_bazos_sections()
+sections = BazosHttp().fetch_bazos_sections()
 price_select_values = [("dohodou", "Dohodou"), ("ponuknite","Ponúknite"), ("zadarmo", "Zadarmo")]#TODO tuple a bazos original values
 
 field_is_required = "Toto pole je povinné."

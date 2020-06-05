@@ -1,10 +1,15 @@
+import re
+import string
+
 import requests
+from bs4 import BeautifulSoup
 
 
 class BazosHttp:
 
     def __init__(self,
                  cookie='_ga=GA1.2.1388617534.1590739305; __gfp_64b=9SqKXQEikg2hyptJMf.uA.H_qXz0i8qdzptYc0rBJor.C7; bkod=061S9KQLK8; bid=35707664; _gid=GA1.2.1410804962.1591029867; testcookie=ano; bmail=michal.svecko22%40gmail.com; btelefon=0948077165; bheslo=101478; bjmeno=Michal; fucking-eu-cookies=1; _gat_gtag_UA_58407_7=1'):
+
         self.headers = {
             'cache-control': 'max-age=0',
             'upgrade-insecure-requests': '1',
@@ -30,7 +35,7 @@ class BazosHttp:
             r = requests.post(base_url + endpoint, headers=self.headers, files=body)
             return r.text.replace("[", "").replace("]", "").replace("\"", "")
 
-    def post_advertisement(self, base_url):# add advetisment
+    def post_advertisement(self, db, base_url):  # add advetisment
         """ Posting advertisement to bazos"""
         endpoint = "/insert.php"
 
@@ -53,4 +58,62 @@ class BazosHttp:
         }
 
         r = requests.post(base_url + endpoint, headers=self.headers, data=body)
-        r
+
+        print("text je ", r.text)
+        print("content je ", r.content)
+
+    def delete_advertisement(self, base_url):
+        endpoint = "/deletei2.php"
+
+        body = {
+            "heslobazar": 101478,
+            "idad": 112245352,
+            "administrace": "Zmazať"
+        }
+
+        r = requests.post(base_url + endpoint, headers=self.headers, data=body)
+
+    def get_advertisement_id(self, response_text, title):
+        soup = BeautifulSoup(response_text, "html.parser")
+        my_ads = soup.find_all("span", {"class": "nadpis"})
+        for ad in my_ads:
+            ad_url = ad.find_all("a")
+            if title == ad_url[0].text:
+                return self.get_number_between_fowardslashes(ad_url[0]["href"])
+
+    def fetch_bazos_categories(self, section):
+        """ method for fetching categories based on selected category"""
+        sct = section.translate(str.maketrans('', '', string.punctuation))  # remove punctuation
+        sct.lower()
+        page = requests.get('https://' + sct + '.bazos.sk/pridat-inzerat.php', headers=self.headers)
+        soup = BeautifulSoup(page.text, 'html.parser')
+        categories_data = soup.find_all("select", {"id": "category"})
+        categories_text = []
+        categories_values = []
+        for ctg in categories_data[0].find_all("option"):
+            categories_text.append(ctg.text)
+            categories_values.append(ctg["value"])
+        return list(zip(categories_values, categories_text))
+
+    def fetch_bazos_sections(self):
+        page = requests.get('https://auto.bazos.sk/pridat-inzerat.php')
+        soup = BeautifulSoup(page.text, 'html.parser')
+        sections_data = soup.find_all("select", {"name": "rubriky"})
+        sections_text = []
+        sections_values = []
+        for option in sections_data[0].find_all('option'):
+            sections_text.append(option.text)
+            sections_values.append(option["value"])
+        return list(zip(sections_values, sections_text))
+
+
+    def fetch_bazos_price_options(self):
+        page = requests.get('https://auto.bazos.sk/pridat-inzerat.php')
+        soup = BeautifulSoup(page.text, 'html.parser')
+        sections_data = soup.find_all("select", {"name": "rubriky"})
+        sections_text = []
+        sections_values = []
+        for option in sections_data[0].find_all('option'):
+            sections_text.append(option.text)
+            sections_values.append(option["value"])
+        return list(zip(sections_values, sections_text))

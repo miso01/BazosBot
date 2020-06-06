@@ -4,7 +4,7 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 from ads.forms import AdForm
 from bazos_http import BazosHttp
-from models import Advertisement, db
+from models import Advertisement, User, db
 import utils
 import flask_login
 from flask_login import current_user
@@ -18,12 +18,8 @@ ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 @ads.route('/ed')
 def ed():
     bh = BazosHttp()
-    #bh.post_advertisement("https://elektro.bazos.sk/")
-    idcko = bh.get_advertisement_id("ddd")
-    print(idcko)
-
-
-
+    #bh.post_advertisement(Advertisement, User, db)
+    #bh.delete_advertisement(Advertisement)
     return "Pridany unzerat"
 
 
@@ -42,6 +38,7 @@ def advertisements():
 @flask_login.login_required
 def add_advertisement():
     form = AdForm()
+    form.price_select
     if form.validate_on_submit():
         """ Custom validation for dynamic select field, wtforms doesnt support dynamic form validation"""
         if form.category.data:
@@ -58,6 +55,7 @@ def add_advertisement():
                 text=form.text.data,
                 image_paths=[],
                 price=form.price.data,  # TODO validate
+                price_select=form.price_select.data,
                 zip_code=form.zip_code.data,
                 phone=form.phone.data,
                 ad_password=form.ad_password.data,
@@ -85,6 +83,7 @@ def add_advertisement():
 @flask_login.login_required
 def edit_advertisement(ad_id):
     ad = Advertisement.query.get_or_404(ad_id)
+
     form = AdForm()
     if request.method == "POST":
         ad.section_value = form.section.data

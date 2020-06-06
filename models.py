@@ -23,7 +23,7 @@ class User(UserMixin, db.Model):
 class Advertisement(db.Model):
     __tablename__ = "ads"
 
-    def __init__(self, user_id, section_text, section_value, category_text, category_value, title, text, price,
+    def __init__(self, user_id, section_text, section_value, category_text, category_value, title, text, price, price_select,
                  zip_code, image_paths, phone,
                  ad_password,
                  date_created, date_refreshed):
@@ -35,6 +35,7 @@ class Advertisement(db.Model):
         self.title = title
         self.text = text
         self.price = price
+        self.price_select = price_select
         self.zip_code = zip_code
         self.image_paths = image_paths
         self.phone = phone
@@ -52,6 +53,7 @@ class Advertisement(db.Model):
     title = db.Column(db.String(60), nullable=False)
     text = db.Column(db.Text(), nullable=False)
     price = db.Column(db.String(20), nullable=False)
+    price_select = db.Column(db.Integer, nullable=False)
     zip_code = db.Column(db.String(10), nullable=False)
     image_paths = db.Column(db.Text(), nullable=False)
     phone = db.Column(db.String(20), nullable=False)

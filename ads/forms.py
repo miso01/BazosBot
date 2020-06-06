@@ -6,7 +6,7 @@ from wtforms.widgets import TextArea
 from bazos_http import BazosHttp
 
 sections = BazosHttp().fetch_bazos_sections()
-price_select_values = [("dohodou", "Dohodou"), ("ponuknite","Ponúknite"), ("zadarmo", "Zadarmo")]#TODO tuple a bazos original values
+price_select_values = BazosHttp().get_bazos_price_options()
 
 field_is_required = "Toto pole je povinné."
 title_min_length = "Názov musí obsahovať minimálne tri znaky."
@@ -21,7 +21,7 @@ class AdForm(FlaskForm):
                                   validators.Length(min=3, message=title_min_length)])
     text = StringField("text", validators=[validators.DataRequired(message=field_is_required)], widget=TextArea())
     price = IntegerField("price", validators=[validators.DataRequired(message=field_is_required)])
-    price_select = SelectField("price_select", choices=price_select_values,
+    price_select = SelectField("price_select", choices=price_select_values, default=1, coerce=int,
                                validators=[validators.DataRequired(message=field_is_required)])
     zip_code = StringField("zip_code", [validators.DataRequired(message=field_is_required),
                                         validators.Length(min=5, max=5, message=zip_code_min_length)])

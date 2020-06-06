@@ -91,9 +91,11 @@
             <br>
             {{ form.text(class='form-control', placeholder='Text',rows="3") }}
             <br>
-            {{ form.price(class='form-control', placeholder='Cena v €', style='max-width: 150px;') }}
-            <br>
-            {{ form.price_select(class='form-control', placeholder='Rubrika', style='max-width: 150px;') }}
+            <div class="row align-items-center m-0">
+                {{ form.price(class='form-control', placeholder='Cena v €', style='max-width: 150px;') }}
+                <div style="margin-left: 10px; margin-right: 10px;">Alebo</div>
+                {{ form.price_select(class='form-control', placeholder='Rubrika', style='max-width: 240px;') }}
+            </div>
             <br>
             {{ form.zip_code(class='form-control', placeholder='PSČ' , style='max-width: 150px;') }}
             <br>

@@ -38,7 +38,6 @@ def advertisements():
 @flask_login.login_required
 def add_advertisement():
     form = AdForm()
-    form.price_select
     if form.validate_on_submit():
         """ Custom validation for dynamic select field, wtforms doesnt support dynamic form validation"""
         if form.category.data:
@@ -60,7 +59,8 @@ def add_advertisement():
                 phone=form.phone.data,
                 ad_password=form.ad_password.data,
                 date_created=datetime.utcnow(),
-                date_refreshed=datetime.utcnow())
+                date_refresh=datetime.utcnow()
+            )
             db.session.add(ad)
             db.session.flush()
 

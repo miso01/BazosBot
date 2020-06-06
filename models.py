@@ -3,15 +3,6 @@ from __init__ import db
 
 
 class User(UserMixin, db.Model):
-    __tablename__ = "users"
-
-    def __init__(self, username, email, password, created_on, last_login):
-        self.username = username
-        self.email = email
-        self.password = password
-        self.created_on = created_on
-        self.last_login = last_login
-
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(30), nullable=False)
     email = db.Column(db.String(60), nullable=False, unique=True)
@@ -21,28 +12,6 @@ class User(UserMixin, db.Model):
 
 
 class Advertisement(db.Model):
-    __tablename__ = "ads"
-
-    def __init__(self, user_id, section_text, section_value, category_text, category_value, title, text, price, price_select,
-                 zip_code, image_paths, phone,
-                 ad_password,
-                 date_created, date_refreshed):
-        self.user_id = user_id
-        self.section_text = section_text
-        self.section_value = section_value
-        self.category_text = category_text
-        self.category_value = category_value
-        self.title = title
-        self.text = text
-        self.price = price
-        self.price_select = price_select
-        self.zip_code = zip_code
-        self.image_paths = image_paths
-        self.phone = phone
-        self.ad_password = ad_password
-        self.date_created = date_created
-        self.date_refresh = date_refreshed
-
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, nullable=False)
     bazos_id = db.Column(db.String(30), nullable=True)
@@ -59,4 +28,4 @@ class Advertisement(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     ad_password = db.Column(db.String(30), nullable=False)
     date_created = db.Column(db.DateTime(), nullable=False)
-    date_refresh = db.Column(db.DateTime(), nullable=False)
+    date_refresh = db.Column(db.DateTime(), nullable=False)##TODO RENAME

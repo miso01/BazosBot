@@ -51,7 +51,7 @@ def login():
                 flash("Heslo nie je správne.")
                 return render_template('login.html', form=form)
         else:
-            flash("Účet pre uvedený email neexistuje.",)
+            flash("Účet pre uvedený email neexistuje.", )
             return render_template('login.html', form=form)
 
     else:
@@ -69,4 +69,3 @@ def logout():
 def load_user(user_id):
     user = User.query.filter_by(id=user_id).first()
     return user
-

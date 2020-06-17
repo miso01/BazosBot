@@ -15,12 +15,14 @@ ads = Blueprint('ads', __name__)
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 
-@ads.route('/ed')
-def ed():
-    bh = BazosHttp()
-    #bh.post_advertisement(Advertisement, User, db)
-    #bh.delete_advertisement(Advertisement)
-    return "Pridany unzerat"
+@ads.route('/fetch_bazos_zip_code_suggestions/<string:query>')
+def fetch_bazos_zip_code_suggestions(query):
+    user = User.query.filter_by(id=current_user.get_id()).first()
+    bh = BazosHttp(user.cookie)
+
+    # bh.post_advertisement(Advertisement, User, db)
+    # bh.delete_advertisement(Advertisement)
+    return jsonify({"suggestions": bh.fetch_bazos_zip_code_suggestions(query)})
 
 
 @ads.route('/ads')
@@ -42,7 +44,8 @@ def add_advertisement():
         """ Custom validation for dynamic select field, wtforms doesnt support dynamic form validation"""
         if form.category.data:
 
-            category_text = utils.get_category_text_from_category_section_value(form.section.data, form.category.data)
+            category_text = utils.get_category_text_from_category_section_value(bh, form.section.data,
+                                                                                form.category.data)
 
             ad = Advertisement(
                 user_id=current_user.get_id(),
@@ -64,7 +67,6 @@ def add_advertisement():
             db.session.add(ad)
             db.session.flush()
 
-            print("ad id after flush je " + str(ad.id))
             image_paths = upload_files(form.image.data, ad.id)
 
             ad.image_paths = image_paths
@@ -101,7 +103,7 @@ def edit_advertisement(ad_id):
         return redirect(url_for('ads.advertisements'))
     else:
         return render_template('edit_add.html', ad=ad, form=AdForm())
-    pass
+    pass  # TODO ZLe
 
 
 @ads.route('/ads/<int:ad_id>')
@@ -117,7 +119,7 @@ def ad_detail(ad_id):
 @flask_login.login_required
 def fetch_bazos_categories(section):
     print("request values are + " + str(request.values))
-    data = BazosHttp().fetch_bazos_categories(str(section))
+    data = bh.fetch_bazos_categories(str(section))
     categories = []
     for category in data:
         value = category[0].replace("/", "")
@@ -125,6 +127,16 @@ def fetch_bazos_categories(section):
         categories.append(ctg)
 
     return jsonify({"categories": categories})
+
+
+@ads.route('/save_bazos_cookie/<cookie>')
+@flask_login.login_required
+def save_bazos_cookie(cookie):
+    user = User.query.filter_by(id=current_user.get_id()).first()
+    print("cookie je " + cookie)
+    user.cookie = cookie
+    db.session.commit()
+    return ""
 
 
 @ads.route('/ads/delete/<int:ad_id>')

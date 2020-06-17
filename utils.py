@@ -1,14 +1,12 @@
 import re
 from flask import flash
 
-from bazos_http import BazosHttp
 
-
-def get_category_text_from_category_section_value(section_value, category_value):
+def get_category_text_from_category_section_value(bazos_http, section_value, category_value):
     """ We don't have access to <option> text, so in order to get category text
         we have to download categories again and choose value according to the
         section and category value"""
-    fetched_categories = BazosHttp().fetch_bazos_categories(section_value)
+    fetched_categories = bazos_http.fetch_bazos_categories(section_value)
     category_list_tuple = [item for item in fetched_categories if item[0] == category_value]
     return category_list_tuple[0][1]
 

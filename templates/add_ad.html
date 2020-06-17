@@ -4,12 +4,38 @@
 
     <title>Bazoš Bot</title>
 
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 {% endblock %}
 
 {% block body %}
 
 
     <script>
+
+        $(function () {
+            $("#zip_code").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "/fetch_bazos_zip_code_suggestions/" + $("#zip_code").val(),
+                        dataType: 'JSON',
+                        success: function (data) {
+                            response(data.suggestions)
+                        }
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    event.preventDefault();
+                    // replace all leading non-digits with nothing
+                    let zipCode = ui.item.value.toString().replace(/\D/g, '');
+                    $("#zip_code").val(zipCode);
+                },
+            },);
+        });
+
 
         function onImageUpload() {
             let preview = document.getElementById("preview");
@@ -70,9 +96,8 @@
 
     </script>
 
-
-
     <div class="container">
+
 
         <br>
 
@@ -97,7 +122,7 @@
                 {{ form.price_select(class='form-control', placeholder='Rubrika', style='max-width: 240px;') }}
             </div>
             <br>
-            {{ form.zip_code(class='form-control', placeholder='PSČ' , style='max-width: 150px;') }}
+            {{ form.zip_code(class='form-control', placeholder='PSČ' , style='max-width: 150px;', autocomplete="off") }}
             <br>
             {{ form.image(class="d-flex align-content-start", placeholder='Pridaj fotky', onchange="onImageUpload()") }}
             <br>

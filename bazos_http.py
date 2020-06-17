@@ -2,14 +2,13 @@ import string
 
 import requests
 from bs4 import BeautifulSoup
-
 import utils
 
 
 class BazosHttp:
 
-    def __init__(self,
-                 cookie='_ga=GA1.2.1388617534.1590739305; __gfp_64b=9SqKXQEikg2hyptJMf.uA.H_qXz0i8qdzptYc0rBJor.C7; bkod=061S9KQLK8; bid=35707664; _gid=GA1.2.1410804962.1591029867; testcookie=ano; bmail=michal.svecko22%40gmail.com; btelefon=0948077165; bheslo=101478; bjmeno=Michal; fucking-eu-cookies=1; _gat_gtag_UA_58407_7=1'):
+    def __init__(self, cookie):
+
         self.headers = {
             'cache-control': 'max-age=0',
             'upgrade-insecure-requests': '1',
@@ -89,14 +88,18 @@ class BazosHttp:
 
             requests.post(base_url + endpoint, headers=self.headers, data=body)
 
-    @staticmethod
-    def get_advertisement_id(response_text, title):
-        soup = BeautifulSoup(response_text, "html.parser")
-        my_ads = soup.find_all("span", {"class": "nadpis"})
-        for ad in my_ads:
-            ad_url = ad.find_all("a")
-            if title == ad_url[0].text:
-                return utils.get_number_between_forward_slashes(ad_url[0]["href"])
+    def fetch_bazos_zip_code_suggestions(self, query):
+        base_url = "https://auto.bazos.sk/"
+        endpoint = "/suggestpscinsert.php?qnaspsc=" + query
+
+        response = requests.get(base_url + endpoint, headers=self.headers)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        data = soup.find_all("td", {"class": "act"})
+        zip_codes = []
+        for zip_code in data:
+            zip_codes.append(zip_code.text)
+            print(zip_code.text)
+        return zip_codes
 
     def fetch_bazos_categories(self, section):
         """Method for fetching categories based on selected category"""
@@ -111,6 +114,15 @@ class BazosHttp:
             categories_text.append(ctg.text)
             categories_values.append(ctg["value"])
         return list(zip(categories_values, categories_text))
+
+    @staticmethod
+    def get_advertisement_id(response_text, title):
+        soup = BeautifulSoup(response_text, "html.parser")
+        my_ads = soup.find_all("span", {"class": "nadpis"})
+        for ad in my_ads:
+            ad_url = ad.find_all("a")
+            if title == ad_url[0].text:
+                return utils.get_number_between_forward_slashes(ad_url[0]["href"])
 
     @staticmethod
     def fetch_bazos_sections():

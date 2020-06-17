@@ -1,12 +1,12 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileRequired, FileAllowed
+from flask_wtf.file import FileAllowed
 from wtforms import StringField, PasswordField, SelectField, validators, IntegerField, MultipleFileField
 from wtforms.widgets import TextArea
 
 from bazos_http import BazosHttp
 
-sections = BazosHttp().fetch_bazos_sections()
-price_select_values = BazosHttp().get_bazos_price_options()
+sections = BazosHttp.fetch_bazos_sections()
+price_select_values = BazosHttp.get_bazos_price_options()
 
 field_is_required = "Toto pole je povinné."
 title_min_length = "Názov musí obsahovať minimálne tri znaky."

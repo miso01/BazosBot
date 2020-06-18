@@ -53,14 +53,17 @@
     background-image: none;
 }
 
-.carousel-indicators .active{
+.carousel-indicators .active {
     background-color: white;
 }
 
-.carousel-indicators li{
+
+
+.carousel-indicators li {
     background-color: black;
     width: 10px;
 }
+
 .carousel-control-next-icon:after {
     content: '>';
     font-size: 30px;

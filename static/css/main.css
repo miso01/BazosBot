@@ -39,10 +39,38 @@
 }
 
 .image_preview {
-    width: 100px;
-    height: auto;
+    width: auto;
+    height: 100px;
     border: 2px solid #f94f08;
     margin: 10px;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    height: 100px;
+    width: 100px;
+    background-size: 100%, 100%;
+    background-image: none;
+}
+
+.carousel-indicators .active{
+    background-color: white;
+}
+
+.carousel-indicators li{
+    background-color: black;
+    width: 10px;
+}
+.carousel-control-next-icon:after {
+    content: '>';
+    font-size: 30px;
+    color: black;
+}
+
+.carousel-control-prev-icon:after {
+    content: '<';
+    font-size: 30px;
+    color: black;
 }
 
 .ellipsis {

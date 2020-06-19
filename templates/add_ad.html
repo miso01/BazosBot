@@ -12,100 +12,11 @@
 
 {% block body %}
 
-
-    <script>
-
-        $(function () {
-            $("#zip_code").autocomplete({
-                source: function (request, response) {
-                    $.ajax({
-                        url: "/fetch_bazos_zip_code_suggestions/" + $("#zip_code").val(),
-                        dataType: 'JSON',
-                        success: function (data) {
-                            response(data.suggestions)
-                        }
-                    });
-                },
-                minLength: 3,
-                select: function (event, ui) {
-                    event.preventDefault();
-                    // replace all leading non-digits with nothing
-                    let zipCode = ui.item.value.toString().replace(/\D/g, '');
-                    $("#zip_code").val(zipCode);
-                },
-            },);
-        });
-
-
-        function onImageUpload() {
-            let preview = document.getElementById("preview");
-            let imageField = document.getElementById("image");
-            let innerHTML = '';
-
-            for (let img of imageField.files) {
-                let reader = new FileReader();
-
-                reader.readAsDataURL(img);
-                reader.onload = function (e) {
-                    // get loaded data and render thumbnail.
-                    innerHTML += "<img class='image_preview' src=" + e.target.result + ">" + "</img>";
-
-                    preview.innerHTML = innerHTML;
-                    console.log("called na ochagne");
-                };
-            }
-
-            // add br after the preview div
-            let br = document.createElement("br");
-            insertAfter(preview, br);
-
-
-        }
-
-        function insertAfter(referenceNode, newNode) {
-            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
-        }
-
-
-        function onSectionChanged() {
-
-            let sectionsSelector = document.getElementById("section_select")
-            let categoriesSelector = document.getElementById("categories_select")
-
-            console.log("started");
-            const section = sectionsSelector.value;
-            console.log(section);
-
-            //TODO Fix workaround
-            fetch("{{ url_for('ads.fetch_bazos_categories',section="value")}}".replace("value", section)).then(function (response) {
-                console.log("fetch started");
-
-                response.json().then(function (data) {
-                    let optionHTML = "";
-
-                    for (let category of data.categories) {
-                        optionHTML += '<option class="image_preview" value="' + category.value + '">' + category.category_text + '</option>'
-                    }
-
-                    categoriesSelector.innerHTML = optionHTML;
-                    console.log("data setted");
-                });
-            })
-        }
-
-
-    </script>
-
     <div class="container">
-
-
         <br>
-
         <h3>Pridať inzerát</h3>
-
         <form method="POST" action="{{ url_for("ads.add_advertisement") }}" enctype="multipart/form-data"
               class="text-center">
-
             {{ form.csrf_token }}
             <br>
             {{ form.section(class='form-control', onchange="onSectionChanged()", placeholder='Rubrika',id="section_select", style='max-width: 400px;') }}
@@ -138,7 +49,6 @@
             <br>
             <br>
             <br>
-
             {% with errors = get_flashed_messages() %}
                 {% if errors %}
                     {% if errors|length > 1 %}
@@ -163,10 +73,6 @@
                     {% endif %}
                 {% endif %}
             {% endwith %}
-
         </form>
     </div>
-
-
-
 {% endblock %}

@@ -6,7 +6,7 @@ import utils
 
 
 class BazosHttp:
-    #need to solve passing cookie to this class
+    # need to solve passing cookie to this class
 
     def __init__(self, cookie):
 
@@ -73,7 +73,7 @@ class BazosHttp:
 
             response = requests.post(base_url + endpoint, headers=self.headers, data=body)
 
-            ad.bazos_id = self.get_advertisement_id(response.text, ad.title)
+            ad.bazos_id = self.get_advertisement_id_after_advertisement_is_added(response.text, ad.title)
             db.session.commit()
 
     def delete_advertisements(self, advertisement):
@@ -89,59 +89,32 @@ class BazosHttp:
 
             requests.post(base_url + endpoint, headers=self.headers, data=body)
 
-    def fetch_bazos_zip_code_suggestions(self, query):
-        base_url = "https://auto.bazos.sk/"
-        endpoint = "/suggestpscinsert.php?qnaspsc=" + query
-
-        response = requests.get(base_url + endpoint, headers=self.headers)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        data = soup.find_all("td", {"class": "act"})
-        zip_codes = []
-        for zip_code in data:
-            zip_codes.append(zip_code.text)
-            print(zip_code.text)
-        return zip_codes
-
-    def fetch_bazos_categories(self, section):
-        """Method for fetching categories based on selected category"""
-        sct = section.translate(str.maketrans('', '', string.punctuation))  # remove punctuation
-        sct.lower()
-        page = requests.get('https://' + sct + '.bazos.sk/pridat-inzerat.php', headers=self.headers)
-        soup = BeautifulSoup(page.text, 'html.parser')
-        categories_data = soup.find_all("select", {"id": "category"})
-        categories_text = []
-        categories_values = []
-        for ctg in categories_data[0].find_all("option"):
-            categories_text.append(ctg.text)
-            categories_values.append(ctg["value"])
-        return list(zip(categories_values, categories_text))
-
     @staticmethod
-    def get_advertisement_id(response_text, title):
-        soup = BeautifulSoup(response_text, "html.parser")
+    def get_all_ads_ids(user_email):
+        base_url = "https://www.bazos.sk"
+        endpoint = "/moje-inzeraty.php?mail=" + user_email + "&Submit=Vyp%C3%ADsa%C5%A5+inzer%C3%A1ty"
+        response = requests.get(base_url + endpoint)
+        soup = BeautifulSoup(response.text, "html.parser")
         my_ads = soup.find_all("span", {"class": "nadpis"})
+        ads_ids = []
         for ad in my_ads:
             ad_url = ad.find_all("a")
-            if title == ad_url[0].text:
-                return utils.get_number_between_forward_slashes(ad_url[0]["href"])
+            ads_ids.append(utils.get_number_between_forward_slashes(ad_url[0]["href"]))
+        return ads_ids
 
     @staticmethod
-    def fetch_bazos_sections():
-        page = requests.get('https://auto.bazos.sk/pridat-inzerat.php')
-        soup = BeautifulSoup(page.text, 'html.parser')
-        sections_data = soup.find_all("select", {"name": "rubriky"})
-        sections_text = []
-        sections_values = []
-        for option in sections_data[0].find_all('option'):
-            sections_text.append(option.text)
-            sections_values.append(option["value"])
-        return list(zip(sections_values, sections_text))
-
-    @staticmethod
-    def get_bazos_price_options():
-        return [(1, "Vyberte jednu z možností"),
-                (2, "Dohodou"),
-                (3, "Ponúknite"),
-                (4, "Nerozhoduje"),
-                (5, "V texte"),
-                (6, "Zadarmo")]
+    def get_ad_data(ad_id):
+        # search for advertisement with specified id
+        base_url = "https://www.bazos.sk"
+        endpoint = "/search.php?hledat=" + ad_id + "&Submit=H%C4%BEada%C5%A5&rubriky=www&hlokalita=&humkreis=25&cenaod=&cenado=&kitx=ano"
+        response = requests.get(base_url + endpoint)
+        soup = BeautifulSoup(response.text, "html.parser")
+        my_ads = soup.find_all("span", {"class": "nadpis"})
+        ads_ids = []
+        for ad in my_ads:
+            ad_url = ad.find_all("a")
+            searched_ad_id = ads_ids.append(utils.get_number_between_forward_slashes(ad_url[0]["href"]))
+            if searched_ad_id == ad:
+                print("hrefko "+ ad_url[0]["href"])
+        response
+        base_url = "https://nabytok.bazos.sk/inzerat/112522940/macbook-air-2019-128gb-spacegray.php"

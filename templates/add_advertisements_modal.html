@@ -1,0 +1,101 @@
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+<script>
+
+    let inputCounter = 1;
+
+
+    $(document).on('click', '#btnAddInput', function (event) {
+        console.log("preven called a counter je " + inputCounter);
+        event.preventDefault();
+        inputCounter++;
+        $("#inputFields").append("<input type=\"text\" class=\"form-control\" placeholder=\"Inzerát č." + inputCounter + "\"> <br> ");
+    });
+
+
+    $(document).on('change', '#checkbox', function (event) {
+        event.preventDefault();
+        let checkbox = $("#checkbox");
+        if (this.checked == true) {
+            $('#inputFieldsWithButton *').prop('disabled', true);
+            checkbox.prop("checked", true);
+        } else {
+            $('#inputFieldsWithButton *').prop('disabled', false);
+            checkbox.prop("checked", false);
+        }
+    });
+
+    function saveAdIds() {
+        let checkbox = $("#checkbox")[0];
+        var inputValues =[];
+        if (checkbox.checked == true) {
+            console.log("vsetky");
+        } else {
+            console.log("niektore");
+            let allInputs = $("#inputFields").find(':input');
+            for (let i = 0; i < allInputs.length; i++) {
+                inputValues.push(allInputs[i].value)
+            }
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "save_ads_ids",
+            data: {
+                ads_ids: inputValues
+            },
+            success: function () {
+                alert("Data: " + data + "\nStatus: " + status);
+            },
+        });
+    }
+
+
+</script>
+<div class="modal fade" id="addAdvertisementsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Pridať inzeráty</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <small>Tu musíš pridať ID inzerátov z Bazošu, ktoré chceš automatizovať...</small>
+                    <br>
+                    <small>Príklad: 112836480 (9 - miestne číslo)</small>
+                    <br>
+                    <br>
+                    <div class="form-group">
+
+                        <div class="form-check">
+                            <input checked="checked" type="checkbox" class="form-check-input" id="checkbox">
+                            <label class="form-check-label" for="checkbox">Automatizovať všetky inzeráty z môjho bazoš
+                                profilu na základe e-mailu použitého v registrácií</label>
+                        </div>
+
+                        <div id="inputFieldsWithButton">
+                            <div id="inputFields">
+                                <br>
+                                <input disabled="disabled" type="text" class="form-control" id="ad_id_1"
+                                       placeholder="Inzerát č.1">
+                                <br>
+                            </div>
+                            <input disabled="disabled" type="submit" id="btnAddInput" class="btn btn-info"
+                                   value="Ďalší inzerát"/>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvoriť</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveAdIds()">Pridať
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

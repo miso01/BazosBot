@@ -7,11 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for("static", filename="css/main.css") }}">
-<link href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel="Stylesheet"/>
-
-
-
-
+    <link href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css" rel="Stylesheet"/>
 
     {% block head %}
 
@@ -21,7 +17,7 @@
 
 <script>
 
-    function saveCookie(){
+    function saveCookie() {
         let cookieInput = document.getElementById("cookie");
         console.log("cookie je " + cookieInput.value);
     }
@@ -38,17 +34,17 @@
     <div class="collapse navbar-collapse" id="navbarsExample09">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('ads.advertisements', user_id=3) }}">Moje inzeráty<span
+                <a class="nav-link" href="{{ url_for('ads.advertisements') }}">Moje inzeráty<span
                         class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="{{ url_for('ads.add_advertisement') }}">Pridať Inzerát</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" data-toggle="modal" data-target="#exampleModal"
                    data-whatever="@mdo">Pridať Cookie</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item active">
                 <a class="nav-link" href="{{ url_for('auth.logout') }}">Odhlásiť sa</a>
             </li>
         </ul>
@@ -70,6 +66,8 @@
                 <form>
                     <small>Aby bot fungoval správne je nutné pridať cookie, ktoré obdržíš po overení telefónneho čísla
                         na Bazoši.</small>
+                    <br>
+                    <small>Priklad : _ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37</small>
                     <div class="form-group">
                         <label for="recipient-name" class="col-form-label">Cookie:</label>
                         <input type="text" class="form-control" id="cookie">
@@ -79,7 +77,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvoriť</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveCookie()">Pridať</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveCookie()">Pridať
+                </button>
             </div>
         </div>
     </div>
@@ -105,9 +104,7 @@
         integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
         crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js" ></script>
-
-
+<script src="http://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
 </body>

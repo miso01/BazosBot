@@ -6,6 +6,7 @@ import utils
 
 
 class BazosHttp:
+    #need to solve passing cookie to this class
 
     def __init__(self, cookie):
 

@@ -1,12 +1,11 @@
+import itertools
 from datetime import datetime
 
 import flask_login
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import current_user
-
-import utils
 from bazos_http import BazosHttp
-from models import User, db
+from models import User, db, Advertisement
 
 ads = Blueprint('ads', __name__)
 
@@ -39,25 +38,33 @@ def save_bazos_cookie(cookie):
 def ed():
     user = User.query.filter_by(id=current_user.get_id()).first()
     ads_ids = request.form.getlist("ads_ids[]")
+    intervals = request.form.getlist("intervals[]")
+
+    print("ads_ids lenght je " + str(len(ads_ids)))
+    print("intervals  lenght je " + str(len(intervals)))
     if len(ads_ids) == 0:
         ads_ids = BazosHttp(
-        "_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37").get_all_ads_ids(
-        user.email)
+            "_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37").get_all_ads_ids(
+            user.email)
+        # single interval for every advertisement
+        ads = zip(ads_ids, itertools.repeat(intervals[0]))
     else:
-        if user.ads_ids:
-            list_from_string = user.ads_ids.replace("{", "").replace("}", "").split(",")
-            ads_ids = list_from_string + ads_ids
+        ads = zip(ads_ids, intervals)
 
-    #remove duplication
-    ads_ids = list(dict.fromkeys(ads_ids))
-    user.ads_ids = ads_ids
+    for ad_id, interval in ads:
+        print("for lopp toto je idecko " + ad_id)
+        print("for lopp toto je interval " + interval)
+        user.ads.append(Advertisement(ad_id=ad_id, interval=interval, refresh_date=datetime.utcnow()))
+
     db.session.add(user)
     db.session.commit()
 
     return "save_ads_ids"
 
+
 @ads.route('/test')
 def test():
     BazosHttp(
-        "_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37").get_ad_data("112419620")
+        "_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37").get_ad_data(
+        "112419620")
     return "ddd"

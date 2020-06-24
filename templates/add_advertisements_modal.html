@@ -9,7 +9,7 @@
         console.log("preven called a counter je " + inputCounter);
         event.preventDefault();
         inputCounter++;
-        $("#inputFields").append("<input type=\"text\" class=\"form-control\" placeholder=\"Inzerát č." + inputCounter + "\"> <br> ");
+        $("#inputFields").append("<div class=\"d-flex\"><input name=\"ads_ids\" autocomplete=\"off\" type=\"number\" max=\"999999999\" min=\"1\" class=\"form-control\" style=\"margin-right: 20px;\" placeholder=\"Inzerát č." + inputCounter + "\"> <input name=\"ads_intervals\" autocomplete=\"off\" type=\"number\" class=\"form-control\" placeholder=\"Refresh Interval\" style=\"margin-left: 20px;\"></div><br>");
     });
 
 
@@ -18,36 +18,82 @@
         let checkbox = $("#checkbox");
         if (this.checked == true) {
             $('#inputFieldsWithButton *').prop('disabled', true);
+            $('#interval').prop('disabled', false);
             checkbox.prop("checked", true);
         } else {
             $('#inputFieldsWithButton *').prop('disabled', false);
+            $('#interval').prop('disabled', true);
             checkbox.prop("checked", false);
         }
     });
 
     function saveAdIds() {
         let checkbox = $("#checkbox")[0];
-        var inputValues =[];
-        if (checkbox.checked == true) {
-            console.log("vsetky");
+
+        if (validateInputs(checkbox)) {
+            var ads_ids = [];
+            var ads_intervals = [];
+
+            if (checkbox.checked === true) {
+                ads_intervals = [$("#interval").val()];
+                console.log("all advertisements from bazos with interval " + ads_intervals.toString())
+            } else {
+                let ads_ids_inputs = $("[name='ads_ids']");
+                let ads_intervals_inputs = $("[name='ads_intervals']");
+
+                for (let i = 0; i < ads_ids_inputs.length; i++)
+                    ads_ids.push(ads_ids_inputs[i].value)
+
+                for (let i = 0; i < ads_intervals_inputs.length; i++)
+                    ads_intervals.push(ads_intervals_inputs[i].value)
+
+                console.log("ads input ids lengght " + ads_ids_inputs.length);
+                console.log("ads input intervals lengght " + ads_intervals_inputs.length);
+            }
+
+            $.ajax({
+                type: "POST",
+                url: "save_ads_ids",
+                data: {
+                    ads_ids: ads_ids,
+                    intervals: ads_intervals
+                },
+                success: function () {
+                    //alert("Data: " + data + "\nStatus: " + status);
+                },
+            });
+        }
+    }
+
+
+    function validateInputs(checkbox) {
+        if (checkbox.checked === false) {
+            // validating manually added advertisements
+            let ads_ids_inputs = $("[name='ads_ids']");
+            for (let i = 0; i < ads_ids_inputs.length; i++) {
+                if (ads_ids_inputs[i].value.length !== 9) {
+                    alert("Všetky ID inzerátov musia obshaovať 9 znakov...");
+                    return false;
+                }
+            }
+
+            let ads_intervals_inputs = $("[name='ads_intervals']");
+            for (let i = 0; i < ads_intervals_inputs.length; i++) {
+                if (ads_intervals_inputs[i].value <= 0 || ads_intervals_inputs[i].value > 60) {
+                    alert("Refresh interval musí nadobúdať hodnotu od 1 do 60...");
+                    return false;
+                }
+            }
+            return true;
         } else {
-            console.log("niektore");
-            let allInputs = $("#inputFields").find(':input');
-            for (let i = 0; i < allInputs.length; i++) {
-                inputValues.push(allInputs[i].value)
+            // validating only single interval input
+            let intervalValue = $("#interval").val();
+            if (parseInt(intervalValue) <= 0 || parseInt(intervalValue) > 60) {
+                alert("Refresh interval musí nadobúdať hodnotu od 1 do 60...");
+                return false;
             }
         }
-
-        $.ajax({
-            type: "POST",
-            url: "save_ads_ids",
-            data: {
-                ads_ids: inputValues
-            },
-            success: function () {
-                alert("Data: " + data + "\nStatus: " + status);
-            },
-        });
+        return true;
     }
 
 
@@ -70,30 +116,37 @@
                     <br>
                     <br>
                     <div class="form-group">
-
-                        <div class="form-check">
-                            <input checked="checked" type="checkbox" class="form-check-input" id="checkbox">
-                            <label class="form-check-label" for="checkbox">Automatizovať všetky inzeráty z môjho bazoš
+                        <div class="d-flex align-items-center">
+                            <input checked="checked" type="checkbox" id="checkbox" style="margin-right: 20px;">
+                            <label for="checkbox">Automatizovať všetky inzeráty z môjho bazoš
                                 profilu na základe e-mailu použitého v registrácií</label>
                         </div>
+
+                        <input autocomplete="off" type="number" class="form-control" id="interval"
+                               placeholder="Refresh Interval">
 
                         <div id="inputFieldsWithButton">
                             <div id="inputFields">
                                 <br>
-                                <input disabled="disabled" type="text" class="form-control" id="ad_id_1"
-                                       placeholder="Inzerát č.1">
+                                <div class="d-flex">
+                                    <input disabled="disabled" type="number" maxlength="3" min="1" class="form-control"
+                                           name="ads_ids"
+                                           placeholder="Inzerát č.1" style="margin-right: 20px;" autocomplete="off">
+
+                                    <input disabled="disabled" type="number" class="form-control" name="ads_intervals"
+                                           placeholder="Refresh Interval" style="margin-left: 20px;" autocomplete="off">
+                                </div>
                                 <br>
                             </div>
                             <input disabled="disabled" type="submit" id="btnAddInput" class="btn btn-info"
                                    value="Ďalší inzerát"/>
-
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvoriť</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveAdIds()">Pridať
+                <button type="button" class="btn btn-primary" onclick="saveAdIds()">Pridať
                 </button>
             </div>
         </div>

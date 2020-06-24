@@ -1,36 +1,8 @@
-import string
 import re
 
 import requests
 from bs4 import BeautifulSoup
 import utils
-
-
-def get_images_url_from_ad_detail(soup):
-    images_urls = []
-    carousel = soup.find_all("div", {"class": "carousel-cell"})
-    for image in carousel:
-        img_element = image.find_all("img", {"class": "carousel-cell-image"})
-        img_url = img_element[0]["data-flickity-lazyload"]
-        images_urls.append(img_url)
-    return images_urls
-
-
-def get_description_from_ad_detail(soup):
-    description_div = soup.find_all("div", {"class": "popis"})
-    return description_div[0].text
-
-
-def get_title_from_ad_detail(soup):
-    title_element = soup.find_all("title")
-    return title_element[0].text
-
-def get_price_from_ad_detail(soup):
-    td_elements = soup.find_all("td", {"colspan": "2"})
-    last_td = td_elements[len(td_elements) -1]
-    price = last_td.find_all("b")[0].text
-    formatted_price = price.replace("€", "").strip()
-    return formatted_price
 
 
 class BazosHttp:
@@ -137,6 +109,8 @@ class BazosHttp:
         ad_title = ""
         ad_phone = ""
         ad_price = ""
+        ad_category = ""
+        ad_zip_code = ""
         # search for advertisement with specified id
         base_url = "https://www.bazos.sk"
         endpoint = "/search.php?hledat=" + ad_id + "&Submit=H%C4%BEada%C5%A5&rubriky=www&hlokalita=&humkreis=25&cenaod=&cenado=&kitx=ano"
@@ -153,11 +127,17 @@ class BazosHttp:
                 print(response.text)
 
                 soup = BeautifulSoup(response.text, "html.parser")
-                ad_images_urls = get_images_url_from_ad_detail(soup)
-                ad_description = get_description_from_ad_detail(soup)
-                ad_title = get_title_from_ad_detail(soup)
+                ad_images_urls = self.get_images_url_from_ad_detail(soup)
+                # for img_url in ad_images_urls:
+                #   @image = requests.get(img_url)
+
+                ad_description = self.get_description_from_ad_detail(soup)
+                ad_title = self.get_title_from_ad_detail(soup)
                 ad_phone = self.get_phone_from_ad_detail(soup)
-                ad_price = get_price_from_ad_detail(soup)
+                ad_price = self.get_price_from_ad_detail(soup)
+                ad_category = self.__get_category_from_ad_detail(soup)
+                ad_zip_code = self.get_zip_code_from_ad_detail(soup)
+
 
 
     def get_phone_from_ad_detail(self, soup):
@@ -173,4 +153,45 @@ class BazosHttp:
         phone = phone_span[0].find_all("a")[0].text
         return phone
 
+    @staticmethod
+    def get_images_url_from_ad_detail(soup):
+        images_urls = []
+        carousel = soup.find_all("div", {"class": "carousel-cell"})
+        for image in carousel:
+            img_element = image.find_all("img", {"class": "carousel-cell-image"})
+            img_url = img_element[0]["data-flickity-lazyload"]
+            images_urls.append(img_url)
+        return images_urls
 
+    @staticmethod
+    def get_description_from_ad_detail(soup):
+        description_div = soup.find_all("div", {"class": "popis"})
+        return description_div[0].text
+
+    @staticmethod
+    def get_title_from_ad_detail(soup):
+        title_element = soup.find_all("title")
+        return title_element[0].text
+
+    @staticmethod
+    def get_price_from_ad_detail(soup):
+        td_elements = soup.find_all("td", {"colspan": "2"})
+        last_td = td_elements[len(td_elements) - 1]
+        price = last_td.find_all("b")[0].text
+        formatted_price = price.replace("€", "").strip()
+        return formatted_price
+
+    @staticmethod
+    def __get_category_from_ad_detail(soup):
+        link_element = soup.find_all("link", {"rel": "alternate"})
+        link_href = link_element[0]["href"]
+        result = re.search("cat=(.*)", link_href)
+        category_id = result.group(1)
+        return category_id
+
+    @staticmethod
+    def get_zip_code_from_ad_detail(soup):
+        a_element = soup.find_all("a", {"title": "Približná lokalita"})
+        location = a_element[0].text
+        zip_code = location[0: 6].replace(" ", "")
+        return zip_code

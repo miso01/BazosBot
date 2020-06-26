@@ -1,9 +1,23 @@
-
 <script>
 
-    function saveCookie() {
+    function saveProfile() {
         let cookieInput = document.getElementById("cookie");
-        console.log("cookie je " + cookieInput.value);
+        let passwordInput = document.getElementById("password");
+
+        $.ajax({
+            type: "POST",
+            url: "save_profile",
+            data: {
+                cookie: cookieInput.value,
+                ad_password: passwordInput.value
+            },
+            success: function () {
+                alert("Dáta úspešne uložené.");
+            },
+            error: function () {
+                alert("Dáta sa nepodarilo uložiť.");
+            }
+        });
     }
 
 </script>
@@ -12,7 +26,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Pridať cookie</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Profil</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -22,12 +36,18 @@
                     <small>Aby bot fungoval správne je nutné pridať cookie, ktoré obdržíš po overení telefónneho čísla
                         na Bazoši.</small>
                     <br>
+                    <br>
                     <small>Priklad : _ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869;
                         bkod=273WXWMGFP; testcookie=ano;
                         __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37</small>
                     <div class="form-group">
-                        <label for="recipient-name" class="col-form-label">Cookie:</label>
-                        <input type="text" class="form-control" id="cookie">
+
+                        <input type="text" class="form-control" id="cookie" placeholder="Cookie">
+                        <br>
+                        <small>Aby Bazoš Bot dokázal zmazať tvoje inzeráty, je nutné pridať heslo k tvojím
+                            inzerátom</small>
+                        <input type="text" class="form-control" id="password" placeholder="Heslo">
+
                     </div>
 
 
@@ -35,7 +55,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvoriť</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveCookie()">Pridať
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveProfile()">Pridať
                 </button>
             </div>
         </div>

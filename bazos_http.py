@@ -89,6 +89,18 @@ class BazosHttp:
 
             requests.post(base_url + endpoint, headers=self.headers, data=body)
 
+    def get_test(self):
+        print("test called")
+        url = "https://www.bazos.sk/moje-inzeraty.php"
+        response = requests.get(url, headers=self.headers)
+        print("respine je " + response.text
+              )
+        soup = BeautifulSoup(response.text, "html.parser")
+        my_ads = soup.find_all("span", {"class": "vypis"})
+        print("maj eds" + str(my_ads))
+        for ad in my_ads:
+            print("my ad je " + ad)
+
     @staticmethod
     def get_all_ads_ids(user_email):
         base_url = "https://www.bazos.sk"
@@ -137,8 +149,6 @@ class BazosHttp:
                 ad_price = self.get_price_from_ad_detail(soup)
                 ad_category = self.__get_category_from_ad_detail(soup)
                 ad_zip_code = self.get_zip_code_from_ad_detail(soup)
-
-
 
     def get_phone_from_ad_detail(self, soup):
         phone_detail_url = soup.find_all("span", {"class": "teldetail"})

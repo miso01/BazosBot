@@ -9,7 +9,6 @@ class BazosHttp:
     # need to solve passing cookie to this class
 
     def __init__(self, cookie):
-
         self.headers = {
             'cache-control': 'max-age=0',
             'upgrade-insecure-requests': '1',
@@ -35,46 +34,55 @@ class BazosHttp:
             r = requests.post(base_url + endpoint, headers=self.headers, files=body)
             return r.text.replace("[", "").replace("]", "").replace("\"", "")
 
-    def post_advertisements(self, advertisement, user, db):
+    def post_advertisement(self, ad_id, user):
         """ Posting advertisement to bazos"""
         endpoint = "/insert.php"
 
-        ads = advertisement.query.all()
+        ad_detail = self.get_ad_detail(ad_id)
+        soup = BeautifulSoup(ad_detail, "html.parser")
 
-        for ad in ads:
+        print("ad detail response je " + str(ad_detail))
 
-            ad_owner = user.query.filter_by(id=ad.user_id).first()
-            base_url = "https://" + ad.section_value + ".bazos.sk/"
+        ad_images_urls = self.get_images_url_from_ad_detail(soup)
+        ad_description = self.get_description_from_ad_detail(soup)
+        ad_title = self.get_title_from_ad_detail(soup)
+        ad_phone = self.get_phone_from_ad_detail(soup)
+        ad_price = self.get_price_from_ad_detail(soup)
+        ad_category = self.__get_category_from_ad_detail(soup)
+        ad_section = self.get_section_from_ad_detail(soup)
+        ad_zip_code = self.get_zip_code_from_ad_detail(soup)
 
-            body = {
-                "category": ad.category_value,
-                "nadpis": ad.title,
-                "popis": ad.text,
-                "cena": ad.price,
-                "cenavyber": ad.price_select,
-                "lokalita": ad.zip_code,
-                "jmeno": ad_owner.username,
-                "telefoni": ad.phone,
-                "maili": ad_owner.email,
-                "heslobazar": ad.ad_password,
-                "rterte": "gdfgdfga",
-                "Submit": "Odoslať",
-            }
+        base_url = "https://" + ad_section + ".bazos.sk/"
 
-            """ in order to send images to request we have to upload images separately first and
-                then we have to send image name in request body """
-            path_list = ad.image_paths.replace("{", "").replace("}", "").split(",")
-            image_name_list = []
-            for path in path_list:
-                image_name = self.upload_image(base_url, path)
-                image_name_list.append(image_name)
+        body = {
+            "category": ad_category,
+            "nadpis": ad_title,
+            "popis": ad_description,
+            "cena": ad_price,
+            "cenavyber": self.choose_cenavyber(ad_price),
+            "lokalita": ad_zip_code,
+            "jmeno": user.username,
+            "telefoni": ad_phone,
+            "maili": user.email,
+            "heslobazar": user.ad_password,
+            "rterte": "gdfgdfga",
+            "Submit": "Odoslať",
+        }
 
-            body["files[]"] = image_name_list
-
-            response = requests.post(base_url + endpoint, headers=self.headers, data=body)
-
-            ad.bazos_id = self.get_advertisement_id_after_advertisement_is_added(response.text, ad.title)
-            db.session.commit()
+        """ in order to send images to request we have to upload images separately first and
+            then we have to send image name in request body """
+        # path_list = ad.image_paths.replace("{", "").replace("}", "").split(",")
+        # image_name_list = []
+        # for path in path_list:
+        #     image_name = self.upload_image(base_url, path)
+        #     image_name_list.append(image_name)
+        #
+        # body["files[]"] = image_name_list
+        #
+        # response = requests.post(base_url + endpoint, headers=self.headers, data=body)
+        #
+        # ad.bazos_id = self.get_advertisement_id_after_advertisement_is_added(response.text, ad.title)
+        # db.session.commit()
 
     def delete_advertisements(self, advertisement):
         endpoint = "/deletei2.php"
@@ -102,16 +110,8 @@ class BazosHttp:
             ads_ids.append(utils.get_number_between_forward_slashes(ad_url[0]["href"]))
         return ads_ids
 
-    def get_ad_data(self, ad_id):
-        # this data we need for uploading advertisement to bazos
-        ad_images_urls = []
-        ad_description = ""
-        ad_title = ""
-        ad_phone = ""
-        ad_price = ""
-        ad_category = ""
-        ad_zip_code = ""
-        # search for advertisement with specified id
+    @staticmethod
+    def get_ad_detail(ad_id):
         base_url = "https://www.bazos.sk"
         endpoint = "/search.php?hledat=" + ad_id + "&Submit=H%C4%BEada%C5%A5&rubriky=www&hlokalita=&humkreis=25&cenaod=&cenado=&kitx=ano"
         response = requests.get(base_url + endpoint)
@@ -124,19 +124,7 @@ class BazosHttp:
                 ad_detail_url = ad_url[0]["href"]
                 # print("ad detail url" + ad_detail_url)
                 response = requests.get(ad_detail_url)
-                # print(response.text)
-
-                soup = BeautifulSoup(response.text, "html.parser")
-                ad_images_urls = self.get_images_url_from_ad_detail(soup)
-                # for img_url in ad_images_urls:
-                #   @image = requests.get(img_url)
-
-                ad_description = self.get_description_from_ad_detail(soup)
-                ad_title = self.get_title_from_ad_detail(soup)
-                ad_phone = self.get_phone_from_ad_detail(soup)
-                ad_price = self.get_price_from_ad_detail(soup)
-                ad_category = self.__get_category_from_ad_detail(soup)
-                ad_zip_code = self.get_zip_code_from_ad_detail(soup)
+                return response.text
 
     def get_phone_from_ad_detail(self, soup):
         phone_detail_url = soup.find_all("span", {"class": "teldetail"})
@@ -213,3 +201,26 @@ class BazosHttp:
         location = a_element[0].text
         zip_code = location[0: 6].replace(" ", "")
         return zip_code
+
+    @staticmethod
+    def get_section_from_ad_detail(soup):
+        div_element = soup.find_all("div", {"class": "drobky"})
+        a_elements = div_element[0].find_all("a")
+        result = re.search('//(.*).baz', a_elements[1]["href"])
+        section = result.group(1)
+        return section
+
+    @staticmethod
+    def choose_cenavyber(price):
+        if price == "Dohodou":
+            return 2
+        elif price == "Ponúknite":
+            return 3
+        elif price == "Nerozhoduje":
+            return 4
+        elif price == "V texte":
+            return 5
+        elif price == "Zadarmo":
+            return 6
+        else:
+            return 1

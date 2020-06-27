@@ -18,27 +18,20 @@ ads = Blueprint('ads', __name__)
 @flask_login.login_required
 def advertisements():
     user = User.query.filter_by(id=current_user.get_id()).first()
-    user_ads = Advertisement.query.join(User).filter(Advertisement.id == user.id)
-    user_ads_html = ""
+    user_ads = Advertisement.query.join(User).filter(Advertisement.user_id == user.id).all()
+    print("predtym")
+    user_ads_html_list = BazosHttp.get_my_ads(user_ads, user.email)
+
+    ads = []
+    ads_html = []
+    for ad, html in user_ads_html_list:
+        ads.append(ad)
+        ads_html.append(html)
 
     bazos_http = BazosHttp(
         "_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37")
 
-    base_url = "https://www.bazos.sk"
-    endpoint = "/moje-inzeraty.php?mail=" + user.email + "&Submit=Vyp%C3%ADsa%C5%A5+inzer%C3%A1ty"
-    response = requests.get(base_url + endpoint)
-
-    soup = BeautifulSoup(response.text, "html.parser")
-    my_ads_titles = soup.find_all("span", {"class": "nadpis"})
-    my_ads = soup.find_all("span", {"class": "vypis"})
-    for i in range(len(my_ads_titles)):
-        ad_url = my_ads_titles[i].find_all("a")
-        id = utils.get_number_between_forward_slashes(ad_url[0]["href"])
-        for ad in user_ads:
-            if ad.ad_id == id:
-                user_ads_html += str(my_ads[i])
-
-    return render_template('advertisements.html', ads=user_ads_html)
+    return render_template('advertisements.html', ads=ads, ads_html=ads_html)
 
 
 @ads.route('/ads/add', methods=["POST", "GET"])
@@ -75,9 +68,9 @@ def ed():
         ads = zip(ads_ids, intervals)
 
     for ad_id, interval in ads:
-        print("for lopp toto je idecko " + ad_id)
-        print("for lopp toto je interval " + interval)
-        user.ads.append(Advertisement(ad_id=ad_id, interval=interval, refresh_date=datetime.utcnow()))
+        ad = Advertisement.query.filter_by(ad_id=ad_id).first()
+        if not ad:
+            user.ads.append(Advertisement(ad_id=ad_id, interval=interval, refresh_date=datetime.utcnow()))
 
     db.session.add(user)
     db.session.commit()
@@ -94,3 +87,11 @@ def save_profile():
     db.session.add(user)
     db.session.commit()
     return "SUCCESS"
+
+
+@ads.route('/ads/delete/<int:advertisement_id>')
+def delete_advertisement(advertisement_id):
+    ad = Advertisement.query.filter_by(id=advertisement_id).first()
+    db.session.delete(ad)
+    db.session.commit()
+    return redirect(url_for("ads.advertisements"))

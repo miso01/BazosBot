@@ -89,18 +89,6 @@ class BazosHttp:
 
             requests.post(base_url + endpoint, headers=self.headers, data=body)
 
-    def get_test(self):
-        print("test called")
-        url = "https://www.bazos.sk/moje-inzeraty.php"
-        response = requests.get(url, headers=self.headers)
-        print("respine je " + response.text
-              )
-        soup = BeautifulSoup(response.text, "html.parser")
-        my_ads = soup.find_all("span", {"class": "vypis"})
-        print("maj eds" + str(my_ads))
-        for ad in my_ads:
-            print("my ad je " + ad)
-
     @staticmethod
     def get_all_ads_ids(user_email):
         base_url = "https://www.bazos.sk"
@@ -134,9 +122,9 @@ class BazosHttp:
             searched_ad_id = utils.get_number_between_forward_slashes(ad_url[0]["href"])
             if searched_ad_id == ad_id:
                 ad_detail_url = ad_url[0]["href"]
-                print("ad detail url" + ad_detail_url)
+                # print("ad detail url" + ad_detail_url)
                 response = requests.get(ad_detail_url)
-                print(response.text)
+                # print(response.text)
 
                 soup = BeautifulSoup(response.text, "html.parser")
                 ad_images_urls = self.get_images_url_from_ad_detail(soup)
@@ -157,11 +145,31 @@ class BazosHttp:
         phone_endpoint = result.group(1)
         base_url = "https://auto.bazos.sk"
         response = requests.get(base_url + phone_endpoint, headers=self.headers)
-        print(response.text)
         soup = BeautifulSoup(response.text, "html.parser")
         phone_span = soup.find_all("span", {"class": "teldetail"})
         phone = phone_span[0].find_all("a")[0].text
         return phone
+
+    @staticmethod
+    def get_my_ads(user_ads, user_email):
+        my_ads_html = []
+        my_ads = []
+        base_url = "https://www.bazos.sk"
+        endpoint = "/moje-inzeraty.php?mail=" + user_email + "&Submit=Vyp%C3%ADsa%C5%A5+inzer%C3%A1ty"
+        response = requests.get(base_url + endpoint)
+        soup = BeautifulSoup(response.text, "html.parser")
+        all_ads_titles = soup.find_all("span", {"class": "nadpis"})
+        all_ads = soup.find_all("span", {"class": "vypis"})
+        for i in range(len(all_ads_titles)):
+            ad_url = all_ads_titles[i].find_all("a")
+            id = utils.get_number_between_forward_slashes(ad_url[0]["href"])
+            for ad in user_ads:
+                if ad.ad_id == id:
+                    my_ads.append(ad)
+                    my_ads_html.append(str(all_ads[i]))
+
+        data = zip(my_ads, my_ads_html)
+        return data
 
     @staticmethod
     def get_images_url_from_ad_detail(soup):

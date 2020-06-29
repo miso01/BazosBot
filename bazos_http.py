@@ -1,4 +1,5 @@
 import re
+from datetime import datetime
 
 import requests
 from bs4 import BeautifulSoup
@@ -22,26 +23,27 @@ class BazosHttp:
             'cookie': cookie
         }
 
-    def upload_image(self, base_url, path):
+    def upload_image(self, base_url, image_url):
         """ We have to upload image first, request retruns image name,
             then we use image name in the post advertisement request """
 
         endpoint = "/upload.php"
+        response = requests.get(image_url)
+        body = {"file[0]": response.content}
+        response = requests.post(base_url + endpoint, headers=self.headers, files=body)
+        return response.text.replace("[", "").replace("]", "").replace("\"", "")
 
-        with open("static/" + path, 'rb') as f:
-            f.seek(0)
-            body = {"file[0]": f.read()}
-            r = requests.post(base_url + endpoint, headers=self.headers, files=body)
-            return r.text.replace("[", "").replace("]", "").replace("\"", "")
-
-    def post_advertisement(self, ad_id, user):
+    def post_advertisement(self, ad, user, advertisement, db):
         """ Posting advertisement to bazos"""
         endpoint = "/insert.php"
 
-        ad_detail = self.get_ad_detail(ad_id)
-        soup = BeautifulSoup(ad_detail, "html.parser")
-
-        print("ad detail response je " + str(ad_detail))
+        try:
+            ad_detail = self.get_ad_detail(ad.ad_id)
+            soup = BeautifulSoup(ad_detail, "html.parser")
+        except TypeError:
+            db.session.delete(ad)
+            db.session.commit()
+            return
 
         ad_images_urls = self.get_images_url_from_ad_detail(soup)
         ad_description = self.get_description_from_ad_detail(soup)
@@ -71,31 +73,35 @@ class BazosHttp:
 
         """ in order to send images to request we have to upload images separately first and
             then we have to send image name in request body """
-        # path_list = ad.image_paths.replace("{", "").replace("}", "").split(",")
-        # image_name_list = []
-        # for path in path_list:
-        #     image_name = self.upload_image(base_url, path)
-        #     image_name_list.append(image_name)
-        #
-        # body["files[]"] = image_name_list
-        #
-        # response = requests.post(base_url + endpoint, headers=self.headers, data=body)
-        #
-        # ad.bazos_id = self.get_advertisement_id_after_advertisement_is_added(response.text, ad.title)
-        # db.session.commit()
 
-    def delete_advertisements(self, advertisement):
+        image_name_list = []
+        for image_url in ad_images_urls:
+            image_name = self.upload_image(base_url, image_url)
+            image_name_list.append(image_name)
+
+        body["files[]"] = image_name_list
+
+        response = requests.post(base_url + endpoint, headers=self.headers, data=body)
+        if response.status_code == 200:
+            self.delete_advertisement(user, ad, ad_section)
+            new_ad_id = self.get_ad_id_from_title(user.email, ad_title)
+            db.session.delete(ad)
+            if new_ad_id:
+                user.ads.append(advertisement(ad_id=new_ad_id, interval=ad.interval, refresh_date=datetime.utcnow()))
+            db.session.commit()
+
+    def delete_advertisement(self, user, ad, section):
         endpoint = "/deletei2.php"
-        for ad in advertisement.query.all():
-            base_url = "https://" + ad.section_value + ".bazos.sk/"
 
-            body = {
-                "heslobazar": ad.ad_password,
-                "idad": ad.bazos_id,
-                "administrace": "Zmazať"
-            }
+        base_url = "https://" + section + ".bazos.sk/"
 
-            requests.post(base_url + endpoint, headers=self.headers, data=body)
+        body = {
+            "heslobazar": user.ad_password,
+            "idad": ad.ad_id,
+            "administrace": "Zmazať"
+        }
+
+        requests.post(base_url + endpoint, headers=self.headers, data=body)
 
     @staticmethod
     def get_all_ads_ids(user_email):
@@ -111,6 +117,19 @@ class BazosHttp:
         return ads_ids
 
     @staticmethod
+    def get_ad_id_from_title(user_email, title):
+        base_url = "https://www.bazos.sk"
+        endpoint = "/moje-inzeraty.php?mail=" + user_email + "&Submit=Vyp%C3%ADsa%C5%A5+inzer%C3%A1ty"
+        response = requests.get(base_url + endpoint)
+        soup = BeautifulSoup(response.text, "html.parser")
+        my_ads = soup.find_all("span", {"class": "nadpis"})
+        for ad in my_ads:
+            ad_url = ad.find_all("a")
+            if title == ad_url[0].text:
+                return utils.get_number_between_forward_slashes(ad_url[0]["href"])
+        return None
+
+    @staticmethod
     def get_ad_detail(ad_id):
         base_url = "https://www.bazos.sk"
         endpoint = "/search.php?hledat=" + ad_id + "&Submit=H%C4%BEada%C5%A5&rubriky=www&hlokalita=&humkreis=25&cenaod=&cenado=&kitx=ano"
@@ -122,7 +141,6 @@ class BazosHttp:
             searched_ad_id = utils.get_number_between_forward_slashes(ad_url[0]["href"])
             if searched_ad_id == ad_id:
                 ad_detail_url = ad_url[0]["href"]
-                # print("ad detail url" + ad_detail_url)
                 response = requests.get(ad_detail_url)
                 return response.text
 

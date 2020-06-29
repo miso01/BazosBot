@@ -100,8 +100,7 @@ def delete_advertisement(advertisement_id):
 @ads.route('/test')
 def test():
     user = User.query.filter_by(id=current_user.get_id()).first()
-
-    bh  = BazosHttp(
-        "_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37")
-    bh.post_advertisement(ad_id="113044525", user=user)
+    ad = Advertisement.query.all()
+    bh = BazosHttp("_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37")
+    bh.post_advertisement(ad=ad[1], user=user, advertisement=Advertisement, db=db)
     return "pahe"

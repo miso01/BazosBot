@@ -1,23 +1,15 @@
 {% extends 'auth_base.html' %}
 
-
+{% block title %}
+    Prihlásenie
+{% endblock %}
 {% block head %}
-
-    <title>Bazoš Bot</title>
-
 {% endblock %}
 
-
 {% block body %}
-
-
-
-
     <div class="d-flex vh-100">
-
         <div class="d-flex w-100 justify-content-center align-self-center text-center">
             <form method="POST" action="{{ url_for("auth.login") }}" class="auth-form">
-
                 <div class="row justify-content-center m-0 p-0">
                     <img src="{{ url_for('static', filename='images/bazos_bot_logo.gif') }}" alt="Bazoš logo"
                          class="app_logo">
@@ -33,51 +25,27 @@
                         style="background-color: #f94f08; border-color: #f94f08;" type="submit">Prihlásiť sa
                 </button>
                 <br>
-                <h6>Ešte nemáš konto? </h6> <a href="{{ url_for('auth.register') }}">Registrovať sa</a>
-
-
+                <h6>Ešte nemáš konto? </h6>
+                <a href="{{ url_for('auth.register') }}">Registrovať sa</a>
                 <br>
                 <br>
                 <br>
-
-
-               {% with errors = get_flashed_messages() %}
+                {% with errors = get_flashed_messages() %}
                     {% if errors %}
-                        {% if errors|length > 1 %}
-                            <div class="alert alert-danger" role="alert">
-                                <ul>
-                                    {%- for msg in errors %}
-                                        {% for m  in msg %}
-                                            <li class="validation_error">{{ m }}</li>
-                                        {% endfor %}
-
-                                    {% endfor -%}
-                                </ul>
-                            </div>
-                        {% else %}
-                            <div class="alert alert-danger" role="alert">
-                                <ul>
-                                    {%- for msg in errors %}
+                        <div class="alert alert-danger" role="alert">
+                            <ul>
+                                {% for msg in errors %}
+                                    {% if msg is iterable %}
+                                        <li class="validation_error">{{ msg | replace("['","") | replace("']","") }}</li>
+                                    {% else %}
                                         <li class="validation_error">{{ msg }}</li>
-                                    {% endfor -%}
-                                </ul>
-                            </div>
-                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% endif %}
                 {% endwith %}
-
-
-
-
             </form>
-
-
         </div>
-
-
-        </div>
-
-
-
-
+    </div>
 {% endblock %}

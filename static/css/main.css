@@ -3,10 +3,11 @@
     font-size: 40px;
     color: black;
     margin-left: 10px;
+
 }
 
 .app_logo {
-    margin-top: 8px;
+    margin-top: 12px;
     width: auto;
     height: 32px;
 }
@@ -15,7 +16,7 @@
 .validation_error {
     color: red;
     text-align: left;
-    list-style: none;
+    list-style-type: space-counter;
 }
 
 

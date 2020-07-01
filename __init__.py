@@ -3,11 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from config import Config
 
-UPLOAD_FOLDER = '/Users/michalsvec/projects/python/BazosBot/static/uploads'
-
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
 db = SQLAlchemy()
 login_manager = LoginManager()
 
@@ -21,8 +16,6 @@ def create_app():
     login_manager.login_message = "Musíte sa prihlásiť aby ste získali prístup k zadavanej stránke."
     login_manager.init_app(app)
 
-
-
     from auth.routes import auth
     from ads.routes import ads
     app.register_blueprint(auth)
@@ -31,6 +24,6 @@ def create_app():
     with app.app_context():
         db.create_all()
         db.session.commit()
-        print("called a vytvorene")
+        print("app created")
 
     return app

@@ -1,24 +1,13 @@
 {% extends 'base.html' %}
 
-
-{% block head %}
-
-    <title>Bazoš Bot</title>
-
-{% endblock %}
-
-
 {% block body %}
-    {#<button><a href="{{ url_for('ads.ed') }}">Pridaj inzerát</a></button>#}
     <div class="container">
         <br>
-
         {% for html  in ads_html %}
             {{ html | safe }}
             <button disabled="disabled" class="btn-warning" style="color: white; font-weight: bold;">Interval: {{ ads[loop.index0].interval }}</button>
             <button disabled="disabled" class="btn-info" style="color: white; font-weight: bold;">Posledný refresh: {{ ads[loop.index0].refresh_date.strftime('%d.%m.%Y %H:%M:%S') }}</button>
             <button class="btn-danger"><a style="color: white; font-weight: bold;" href="{{ url_for("ads.delete_advertisement", advertisement_id=ads[loop.index0].id) }}">Vymazať</a></button>
-
         {% endfor %}
     </div>
 {% endblock %}

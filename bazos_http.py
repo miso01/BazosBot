@@ -89,6 +89,11 @@ class BazosHttp:
             if new_ad_id:
                 user.ads.append(advertisement(ad_id=new_ad_id, interval=ad.interval, refresh_date=datetime.utcnow()))
             db.session.commit()
+            return "SUCCESS"
+        else:
+            db.session.delete(ad)
+            return "FAILED"
+
 
     def delete_advertisement(self, user, ad, section):
         endpoint = "/deletei2.php"

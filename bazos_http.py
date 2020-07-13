@@ -199,8 +199,8 @@ class BazosHttp:
 
     @staticmethod
     def get_title_from_ad_detail(soup):
-        title_element = soup.find_all("title")
-        return title_element[0].text
+        img_element = soup.find_all("img", {"class": "obrazek"})
+        return img_element[0]["alt"]
 
     @staticmethod
     def get_price_from_ad_detail(soup):

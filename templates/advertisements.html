@@ -1,13 +1,50 @@
 {% extends 'base.html' %}
 
+
 {% block body %}
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+
+    <script>
+
+
+        function hideInterval(index) {
+            let interval = document.getElementById("interval" + index);
+            let intervalInput = document.getElementById("interval_input" + index);
+            let editInterval = document.getElementById("edit_interval" + index);
+
+            if (editInterval.innerText === "Potvrdiť") {
+
+                interval.style.display = "inline";
+                intervalInput.style.display = "none";
+                editInterval.innerText = "Upraviť";
+            } else {
+
+                interval.style.display = "none";
+                intervalInput.style.display = "inline";
+                editInterval.innerText = "Potvrdiť";
+            }
+        }
+
+
+    </script>
     <div class="container">
         <br>
         {% for html  in ads_html %}
             {{ html | safe }}
-            <button disabled="disabled" class="btn-warning" style="color: white; font-weight: bold;">Interval: {{ ads[loop.index0].interval }}</button>
-            <button disabled="disabled" class="btn-info" style="color: white; font-weight: bold;">Posledný refresh: {{ ads[loop.index0].refresh_date.strftime('%d.%m.%Y %H:%M:%S') }}</button>
-            <button class="btn-danger"><a style="color: white; font-weight: bold;" href="{{ url_for("ads.delete_advertisement", advertisement_id=ads[loop.index0].id) }}">Vymazať</a></button>
+            <input style="display: none" type="number" id="interval_input{{ loop.index0 }}">
+            <button disabled="disabled" class="btn-warning" style="color: white; font-weight: bold;"
+                    id="interval{{ loop.index0 }}">
+                Interval: {{ ads[loop.index0].interval }}</button>
+            <button onclick="hideInterval({{ loop.index0 }})" class="btn-warning"
+                    style="color: white; font-weight: bold;"
+                    id="edit_interval{{ loop.index0 }}">Upraviť
+            </button>
+            <button disabled="disabled" class="btn-info" style="color: white; font-weight: bold;">Posledný
+                refresh: {{ ads[loop.index0].refresh_date.strftime('%d.%m.%Y %H:%M:%S') }}</button>
+            <button class="btn-danger"><a style="color: white; font-weight: bold;"
+                                          href="{{ url_for("ads.delete_advertisement", advertisement_id=ads[loop.index0].id) }}">Vymazať</a>
+            </button>
         {% endfor %}
     </div>
 {% endblock %}

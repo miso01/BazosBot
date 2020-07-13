@@ -79,12 +79,19 @@ def delete_advertisement(advertisement_id):
     db.session.commit()
     return redirect(url_for("ads.advertisements"))
 
+@ads.route('/ads/edit/<int:advertisement_id>')
+def edit_ad_interval(advertisement_id):
+    ad = Advertisement.query.filter_by(id=advertisement_id).first()
+    db.session.delete(ad)
+    db.session.commit()
+    return redirect(url_for("ads.advertisements"))
 
-@ads.route('/test')
-def test():
-    user = User.query.filter_by(id=current_user.get_id()).first()
-    ad = Advertisement.query.all()
-    bh = BazosHttp(
-        "_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37")
-    bh.post_advertisement(ad=ad[1], user=user, advertisement=Advertisement, db=db)
-    return "pahe"
+
+# @ads.route('/test')
+# def test():
+#     user = User.query.filter_by(id=current_user.get_id()).first()
+#     ad = Advertisement.query.all()
+#     bh = BazosHttp(
+#         "_ga=GA1.2.1097115696.1591092093; _gid=GA1.2.578207826.1591092093; bid=35797869; bkod=273WXWMGFP; testcookie=ano; __gfp_64b=k78R.IcLOGgD2nSd5M4F4fgtq4lw0.el4mlV8DOCzMb.37")
+#     bh.post_advertisement(ad=ad[1], user=user, advertisement=Advertisement, db=db)
+#     return "pahe"

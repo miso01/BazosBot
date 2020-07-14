@@ -49,7 +49,7 @@
         <br>
         {% for html  in ads_html %}
             {{ html | safe }}
-            <input style="display: none; width: 80px;" type="number" id="interval_input{{ loop.index0 }}" >
+            <input style="display: none; width: 80px;" type="number" id="interval_input{{ loop.index0 }}">
             <button disabled="disabled" class="btn-warning" style="color: white; font-weight: bold;"
                     id="interval{{ loop.index0 }}">
                 Interval: {{ ads[loop.index0].interval }}</button>
@@ -57,7 +57,8 @@
                     style="color: white; font-weight: bold;"
                     id="edit_interval{{ loop.index0 }}">Upraviť
             </button>
-            <button disabled="disabled" class="btn-info" style="color: white; font-weight: bold;">Refresh: {{ ads[loop.index0].refresh_date.strftime('%d.%m.%Y %H:%M:%S') }}</button>
+            <button disabled="disabled" class="btn-info" style="color: white; font-weight: bold;">
+                Refresh: {{ ads[loop.index0].refresh_date.strftime('%d.%m.%Y %H:%M:%S') }}</button>
             <button class="btn-danger"><a style="color: white; font-weight: bold;"
                                           href="{{ url_for("ads.delete_advertisement", advertisement_id=ads[loop.index0].id) }}">Vymazať</a>
             </button>

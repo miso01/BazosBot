@@ -94,7 +94,6 @@ class BazosHttp:
             db.session.delete(ad)
             return "FAILED"
 
-
     def delete_advertisement(self, user, ad, section):
         endpoint = "/deletei2.php"
 
@@ -232,6 +231,17 @@ class BazosHttp:
         result = re.search('//(.*).baz', a_elements[1]["href"])
         section = result.group(1)
         return section
+
+    @staticmethod
+    def get_date_from_ad_detail(ad_id):
+        base_url = "https://www.bazos.sk"
+        endpoint = "/search.php?hledat=" + ad_id + "&Submit=H%C4%BEada%C5%A5&rubriky=www&hlokalita=&humkreis=25&cenaod=&cenado=&kitx=ano"
+        response = requests.get(base_url + endpoint)
+        soup = BeautifulSoup(response.text, "html.parser")
+        dates = soup.find_all("span", {"class": "velikost10"})
+        ad_date_string = dates[0].text.replace(" ", "").replace("]", "").replace("[", "").replace("-", "")
+        ad_date = datetime.strptime(ad_date_string, "%d.%m.%Y")
+        return ad_date
 
     @staticmethod
     def choose_cenavyber(price):

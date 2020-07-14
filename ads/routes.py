@@ -79,13 +79,15 @@ def delete_advertisement(advertisement_id):
     db.session.commit()
     return redirect(url_for("ads.advertisements"))
 
-@ads.route('/ads/edit/<int:advertisement_id>')
+
+@ads.route('/ads/edit/<int:advertisement_id>', methods=["POST"])
 def edit_ad_interval(advertisement_id):
     ad = Advertisement.query.filter_by(id=advertisement_id).first()
-    db.session.delete(ad)
+    interval = request.form.get("interval")
+    ad.interval = interval
+    db.session.add(ad)
     db.session.commit()
     return redirect(url_for("ads.advertisements"))
-
 
 # @ads.route('/test')
 # def test():
